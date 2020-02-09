@@ -78,7 +78,7 @@ class HS_Scan:
                                        font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
                                        outlinecolor="#FFFFFF", sweeptype=ImageGauge.DELTA, textcolor='#FFFFFF' 
                                        )
-            stftconfig = ImageGaugeConfig(displayname="STFT", unit="%", altunit=None, min=-100, max=100, alertval=90)
+            stftconfig = ImageGaugeConfig(displayname="STFT", unit="%", altunit=None, min=-100, max=100, alertval=90, fmtstring='{0:.1f}')
             g = ImageGauge(gaugestyle=stftstyle, gaugeconfig=stftconfig)
             self.gauges.append(g)
 
