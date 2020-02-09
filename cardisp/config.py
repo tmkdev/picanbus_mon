@@ -54,10 +54,10 @@ screens = [
         GaugeDef(name='engine_oil_pressure', gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
                     gaugeconfig=ImageGaugeConfig(displayname="OilPres", unit="kPa", altunit=None, min=0, max=1020, alertval=80, fmtstring='{0}'))),
         GaugeDef(name='engine_speed', gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
-                    gaugeconfig=ImageGaugeConfig(displayname="RPM", unit=None, altunit=None, min=0, max=8000, alertval=6500, fmtstring='{0}'))),
+            gaugeconfig=ImageGaugeConfig(displayname="RPM", unit=None, altunit=None, min=0, max=8000, alertval=6500, fmtstring='{0:.0f}'))),
         GaugeDef(name='mass_airflow', gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
                     gaugeconfig=ImageGaugeConfig(displayname="MAF", unit="g/s", altunit=None, min=0, max=656, alertval=400, fmtstring='{0}'))),
-        GaugeDef(name='engine_torque_actual_ex', gaugeclass=ImageGauge(gaugestyle=defaultdelta, 
-                    gaugeconfig=ImageGaugeConfig(displayname="Torque", unit="", altunit=None, min=-848, max=1200, alertval=800, fmtstring='{0}'))),
+        GaugeDef(name='engine_torque_actual_ex', gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+            gaugeconfig=ImageGaugeConfig(displayname="Torque", unit="ftlb", altunit=None, min=-848, max=1200, alertval=800, fmtstring='{0:.0f}'))),
     ],
 ]

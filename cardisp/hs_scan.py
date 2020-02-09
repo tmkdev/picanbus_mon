@@ -84,14 +84,14 @@ class HS_Scan:
             for y in range(2):
                 i = x + (4*y)
       
-                gauge = screens[0][i]
+                gauge = screens[1][i]
  
                 try:
                     val = canreader.data[gauge.name]
                 except:
                     val = None
 
-                pilimage = screens[0][i].gaugeclass.drawval(val)
+                pilimage = gauge.gaugeclass.drawval(val)
                 raw_str = pilimage.tobytes("raw", 'RGB')
                 surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
                 self.screen.blit(surface, (x*320,y*360))

@@ -111,7 +111,7 @@ class ImageGauge(object):
                             fill=self.gaugestyle.barcolor,
                             outline=None)
         except:
-            logging.warning('Value sweep not drawable')
+            logging.info('Value sweep not drawable')
 
         draw.ellipse(( self.gaugestyle.sweepthick + self.gaugestyle.gutter, 
                     self.gaugestyle.sweepthick + self.gaugestyle.gutter + goff, 
@@ -150,7 +150,7 @@ class ImageGauge(object):
                             fill=self.gaugestyle.barcolor,
                             outline=None)
         except:
-            logging.warning('Value sweep not drawable')
+            logging.info('Value sweep not drawable')
 
         draw.ellipse(( self.gaugestyle.sweepthick + self.gaugestyle.gutter, 
                     self.gaugestyle.sweepthick + self.gaugestyle.gutter + goff, 
