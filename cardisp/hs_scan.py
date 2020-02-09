@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+#-*- coding: utf-8 -*-
+
 import os
 import pygame
 import time
@@ -9,19 +12,17 @@ import textwrap
 from collections import deque
 import itertools
 
-from drawgauge import *
-
-#os.environ["SDL_FBDEV"] = "/dev/fb1"
+from imagegauge import *
 
 stdguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
                                     barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
                                     font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                    outlinecolor="#FFFFFF", sweeptype=1, textcolor='#FFFFFF' )
+                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.STD, textcolor='#FFFFFF' )
 
 absguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
                                     barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
                                     font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                    outlinecolor="#FFFFFF", sweeptype=2, textcolor='#FFFFFF' )
+                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.DELTA, textcolor='#FFFFFF' )
 
 
 class HS_Scan:

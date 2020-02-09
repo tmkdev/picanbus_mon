@@ -44,6 +44,6 @@ class CanReader(Thread):
                     pass
 
 if __name__ == '__main__':
-    myreader = CanReader(canbus='can0', dbc='gm_global_a_hs.dbc')
+    myreader = CanReader(canbus='can0', dbc='canbus_dbc/gm_global_a_hs.dbc')
 
     pprint(myreader.cansignals)
