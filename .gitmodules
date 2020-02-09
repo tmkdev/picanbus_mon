@@ -1,0 +1,3 @@
+[submodule "canbus_dbc"]
+	path = canbus_dbc
+	url = https://github.com/tmkdev/canbus_dbc.git
