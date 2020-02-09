@@ -1,0 +1,110 @@
+import os
+import pygame
+import time
+import datetime
+import random
+import logging
+import sys
+import textwrap
+from collections import deque
+import itertools
+
+from drawgauge import *
+
+#os.environ["SDL_FBDEV"] = "/dev/fb1"
+
+stdguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
+                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
+                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor="#FFFFFF", sweeptype=1, textcolor='#FFFFFF' )
+
+absguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
+                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
+                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor="#FFFFFF", sweeptype=2, textcolor='#FFFFFF' )
+
+
+class HS_Scan:
+    screen = None;
+    fontcolor = (0, 255, 0)
+    white = (255, 255, 255)
+    black = (0,0,0)
+    red = (255,0,0)
+
+    def __init__(self):
+        "Ininitializes a new pygame screen using the framebuffer"
+        # Based on "Python GUI in Linux frame buffer"
+        # http://www.karoltomala.com/blog/?p=679
+        disp_no = os.getenv("DISPLAY")
+        if disp_no:
+            logging.warning( "I'm running under X display = {0}".format(disp_no))
+
+        # Check which frame buffer drivers are available
+        # Start with fbcon since directfb hangs with composite output
+        drivers = ['fbcon', 'directfb', 'svgalib']
+        found = False
+        for driver in drivers:
+            # Make sure that SDL_VIDEODRIVER is set
+            if not os.getenv('SDL_VIDEODRIVER'):
+                os.putenv('SDL_VIDEODRIVER', driver)
+            try:
+                pygame.display.init()
+            except pygame.error:
+                logging.warning('Driver: {0} failed.'.format(driver))
+                continue
+            found = True
+            break
+
+        if not found:
+            raise Exception('No suitable video driver found!')
+
+        size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+        logging.warning("Framebuffer size: %d x %d" % (size[0], size[1]))
+        self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+        # Clear the screen to start
+        self.screen.fill((0, 0, 0))
+        # Initialise font support
+        pygame.font.init()
+        # Render the screen
+        pygame.mouse.set_visible(False)
+        pygame.display.update()
+
+        self.gauges = []
+
+        for x in range(8):
+            stftstyle =ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
+                                       barcolor="#FFFF00", barbgcolor="#222222", sweepstart=140, sweepend=400,
+                                       font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
+                                       outlinecolor="#FFFFFF", sweeptype=ImageGauge.DELTA, textcolor='#FFFFFF' 
+                                       )
+            stftconfig = ImageGaugeConfig(displayname="STFT", unit="%", altunit=None, min=-100, max=100, alertval=90)
+            g = ImageGauge(gaugestyle=stftstyle, gaugeconfig=stftconfig)
+            self.gauges.append(g)
+
+    def __del__(self):
+        "Destructor to make sure pygame shuts down, etc."
+        pass
+
+    def updateKPIs(self):
+        self.screen.fill(self.black)
+
+        for x in range(4):
+            for y in range(2):
+
+                val = random.randint(-100,100)
+
+                pilimage=self.gauges[x+(4*y)].drawval(val)
+                raw_str = pilimage.tobytes("raw", 'RGB')
+                surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
+                self.screen.blit(surface, (x*320,y*360))
+
+        pygame.display.update()
+
+    def updateGraph(self, kpi):
+        raise NotImplemented
+
+if __name__ == '__main__':
+    scanner = HS_Scan()
+    while True:
+        time.sleep(1)
+        scanner.updateKPIs()
