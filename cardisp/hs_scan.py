@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
-
 import os
 import pygame
 import time
@@ -12,9 +11,16 @@ import textwrap
 from collections import deque
 import itertools
 
+from threading import Thread
+from queue import Queue
+
 from imagegauge import *
 from config import * 
 from canreader import CanReader
+from evdev import *
+
+events = Queue()
+
 
 stdguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
                                     barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
@@ -28,8 +34,8 @@ absguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertc
 
 canreader = CanReader(canbus='vcan0', dbc='canbus_dbc/gm_global_a_hs.dbc')
 
-class HS_Scan:
-    screen = None;
+class HS_Scan(object):
+    screen = None
     fontcolor = (0, 255, 0)
     white = (255, 255, 255)
     black = (0,0,0)
@@ -72,19 +78,20 @@ class HS_Scan:
         # Render the screen
         pygame.mouse.set_visible(False)
         pygame.display.update()
-
+    
+    
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
         pass
 
-    def updateKPIs(self):
+    def updateKPIs(self, curscreen):
         self.screen.fill(self.black)
 
         for x in range(4):
             for y in range(2):
                 i = x + (4*y)
       
-                gauge = screens[1][i]
+                gauge = screens[curscreen][i]
  
                 try:
                     val = canreader.data[gauge.name]
@@ -101,10 +108,44 @@ class HS_Scan:
     def updateGraph(self, kpi):
         raise NotImplemented
 
+    
+def keyboardworker():
+    while True:
+        try: 
+            dev = InputDevice('/dev/input/event1')
+            for event in dev.read_loop():
+               if event.type == ecodes.EV_KEY:
+                    events.put(event)
+        except:
+            logging.warning('Waiting for input device')
+            time.sleep(1)
+
+
 if __name__ == '__main__':
     scanner = HS_Scan()
     canreader.start()
 
+    t = Thread(target=keyboardworker)
+    t.start()
+
+    curscreen = 0
+
     while True:
+        if not events.empty():
+            event = events.get_nowait()
+            logging.warning(event)
+            if event.type == 1 and event.value == 1:
+                if event.code == 115:
+                    curscreen += 1
+                if event.code == 114:
+                    curscreen -= 1
+
+                if curscreen >= len(screens):
+                    curscreen=0
+                if curscreen < 0:
+                    curscreen = len(screens) -1 
+        
+        
         time.sleep(0.1)
-        scanner.updateKPIs()
+        scanner.updateKPIs(curscreen)
+
