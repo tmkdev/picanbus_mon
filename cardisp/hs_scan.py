@@ -13,6 +13,8 @@ from collections import deque
 import itertools
 
 from imagegauge import *
+from config import * 
+from canreader import CanReader
 
 stdguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
                                     barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
@@ -24,6 +26,7 @@ absguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertc
                                     font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
                                     outlinecolor="#FFFFFF", sweeptype=ImageGauge.DELTA, textcolor='#FFFFFF' )
 
+canreader = CanReader(canbus='vcan0', dbc='canbus_dbc/gm_global_a_hs.dbc')
 
 class HS_Scan:
     screen = None;
@@ -70,18 +73,6 @@ class HS_Scan:
         pygame.mouse.set_visible(False)
         pygame.display.update()
 
-        self.gauges = []
-
-        for x in range(8):
-            stftstyle =ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
-                                       barcolor="#FFFF00", barbgcolor="#222222", sweepstart=140, sweepend=400,
-                                       font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                       outlinecolor="#FFFFFF", sweeptype=ImageGauge.DELTA, textcolor='#FFFFFF' 
-                                       )
-            stftconfig = ImageGaugeConfig(displayname="STFT", unit="%", altunit=None, min=-100, max=100, alertval=90, fmtstring='{0:.1f}')
-            g = ImageGauge(gaugestyle=stftstyle, gaugeconfig=stftconfig)
-            self.gauges.append(g)
-
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
         pass
@@ -91,10 +82,16 @@ class HS_Scan:
 
         for x in range(4):
             for y in range(2):
+                i = x + (4*y)
+      
+                gauge = screens[0][i]
+ 
+                try:
+                    val = canreader.data[gauge.name]
+                except:
+                    val = None
 
-                val = random.randint(-100,100)
-
-                pilimage=self.gauges[x+(4*y)].drawval(val)
+                pilimage = screens[0][i].gaugeclass.drawval(val)
                 raw_str = pilimage.tobytes("raw", 'RGB')
                 surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
                 self.screen.blit(surface, (x*320,y*360))
@@ -106,6 +103,8 @@ class HS_Scan:
 
 if __name__ == '__main__':
     scanner = HS_Scan()
+    canreader.start()
+
     while True:
-        time.sleep(1)
+        time.sleep(0.1)
         scanner.updateKPIs()

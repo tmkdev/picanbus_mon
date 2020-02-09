@@ -101,7 +101,7 @@ class ImageGauge(object):
         try:
             valscale = (value - self.gaugeconfig.min) / (self.gaugeconfig.max - self.gaugeconfig.min)
             barscale = ( self.gaugestyle.sweepend - self.gaugestyle.sweepstart)
-            valbar = int( ( valscale * barscale )  + self.gaugestyle.sweepstart)
+            valbar = 1 + int( ( valscale * barscale )  + self.gaugestyle.sweepstart)
             draw.pieslice(( self.gaugestyle.gutter + self.gaugestyle.outline, 
                             self.gaugestyle.gutter + self.gaugestyle.outline + goff, 
                             self.gaugestyle.width - self.gaugestyle.gutter - self.gaugestyle.outline, 
