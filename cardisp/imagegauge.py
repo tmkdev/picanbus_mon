@@ -7,7 +7,7 @@ ImageGaugeStyle = namedtuple('ImageGaugeStyle', ['width', 'height', 'bgcolor', '
                     'barcolor', 'barbgcolor', 'sweepstart', 'sweepend', 'font', 'sweepthick', 
                     'gutter', 'outline', 'outlinecolor', 'sweeptype', 'textcolor'])
 
-ImageGaugeConfig = namedtuple('ImageGaugeConfig', ['displayname', 'unit', 'altunit', 'min', 'max', 'alertval', 'fmtstring'])
+ImageGaugeConfig = namedtuple('ImageGaugeConfig', ['displayname', 'unit', 'altunit', 'min', 'max', 'alertval', 'alertvallow', 'fmtstring'])
 
 class ImageGauge(object):
     NOSWEEP = 0
@@ -42,11 +42,19 @@ class ImageGauge(object):
         ceny = self.gaugestyle.height/2
 
         bgcol=self.gaugestyle.bgcolor
+
         try:
-            if abs(value) >= self.gaugeconfig.alertval:
+            if value >= self.gaugeconfig.alertval:
                 bgcol=self.gaugestyle.alertcolor
         except:
             logging.info('No val - using default BG')
+
+        try:
+            if value <= self.gaugeconfig.alertvallow:
+                bgcol=self.gaugestyle.alertcolor
+        except:
+            logging.info('No val - using default BG')
+
 
         im = Image.new('RGB', (self.gaugestyle.width, self.gaugestyle.height), bgcol)
         draw = ImageDraw.Draw(im)
@@ -172,10 +180,10 @@ if __name__ == '__main__':
                                     font='segoeui.ttf', sweepthick=25, gutter=20, outline=4,
                                     outlinecolor='#FFFFFF', sweeptype=ImageGauge.BOOL, textcolor='#FFFFFF' )
 
-    testconfig = ImageGaugeConfig(displayname="TPS", unit=None, altunit=None, min=0, max=1, alertval=None, fmtstring='{0}')
+    testconfig = ImageGaugeConfig(displayname="TPS", unit=None, altunit=None, min=0, max=1, alertval=None, alertvallow=None, fmtstring='{0}')
 
     ig = ImageGauge(gaugestyle=teststyle, gaugeconfig=testconfig)
 
-    im = ig.drawval(1)
+    im = ig.drawval(0)
 
     im.show()
