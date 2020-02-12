@@ -20,18 +20,6 @@ from canreader import CanReader
 from evdev import *
 
 events = Queue()
-
-
-stdguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
-                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
-                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.STD, textcolor='#FFFFFF' )
-
-absguagestyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
-                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
-                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.DELTA, textcolor='#FFFFFF' )
-
 canreader = CanReader(canbus='vcan0', dbc='canbus_dbc/gm_global_a_hs.dbc')
 
 class HS_Scan(object):
