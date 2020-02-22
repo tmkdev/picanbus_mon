@@ -49,17 +49,14 @@ class CanReader(Thread):
             message = self.can_bus.recv()
             if message:
                 try:
-                    if message.arbitration_id == 1225:
-                        print(message.data)
-                        
                     newdata = self.db.decode_message(message.arbitration_id, message.data)
                     
                     for sig in newdata:
                         self.data[sig].append( (datetime.datetime.now(), newdata[sig]) )
-
+                except KeyError:
+                    pass
                 except:
-                    if message.arbitration_id == 1225:
-                        logging.exception('Packet decode failed.')
+                    logging.exception(f'Packet decode failed for arbid {message.arbitration_id}')
 
 if __name__ == '__main__':
     e = Event()
