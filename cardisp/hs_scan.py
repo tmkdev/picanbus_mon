@@ -63,18 +63,23 @@ class HS_Scan(object):
         size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
         logging.warning("Framebuffer size: %d x %d" % (size[0], size[1]))
         self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-        # Clear the screen to start
-        self.screen.fill((0, 0, 0))
-        # Initialise font support
-        pygame.font.init()
-        # Render the screen
         pygame.mouse.set_visible(False)
-        pygame.display.update()
-    
+        pygame.font.init()
+        
+        self.displayimage("cardisp/images/v-black.jpg")
+
     
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
         pass
+
+    def displayimage(self, imagename):
+        self.screen.fill(self.black)
+        startuplogo = pygame.image.load(imagename)
+        startuplogo = pygame.transform.scale(startuplogo, (1280,720))
+        self.screen.blit(startuplogo, (0 ,0))
+        
+        pygame.display.update()
 
     def updateKPIs(self, curscreen):
         self.screen.fill(self.black)

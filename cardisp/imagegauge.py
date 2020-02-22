@@ -18,6 +18,7 @@ class ImageGauge(object):
     def __init__(self, gaugestyle, gaugeconfig):
         self.gaugestyle = gaugestyle
         self.gaugeconfig = gaugeconfig
+        self.fonttest = ImageFont.truetype(self.gaugestyle.font, size=12)
         self.fontsmall = ImageFont.truetype(self.gaugestyle.font, size=35)
         self.fontlarge = ImageFont.truetype(self.gaugestyle.font, size=110)
 
