@@ -11,16 +11,20 @@ import textwrap
 from collections import deque
 import itertools
 
-from threading import Thread
+from threading import Thread, Event
 from queue import Queue
 
 from imagegauge import *
 from config import * 
 from canreader import CanReader
+import canwriter
 from evdev import *
 
 events = Queue()
-canreader = CanReader(canbus='vcan0', dbc='canbus_dbc/gm_global_a_hs.dbc')
+
+isrunning = Event()
+isrunning.set()
+canreader = CanReader(canbus='vcan0', dbc=['canbus_dbc/gm_global_a_hs.dbc', 'canbus_dbc/m22_obd.dbc'], isrunning=isrunning)
 
 class HS_Scan(object):
     screen = None
@@ -82,7 +86,7 @@ class HS_Scan(object):
                 gauge = screens[curscreen][i]
  
                 try:
-                    val = canreader.data[gauge.name]
+                    val = canreader.data[gauge.name][-1][1]
                 except:
                     val = None
 
@@ -98,42 +102,66 @@ class HS_Scan(object):
 
     
 def keyboardworker():
-    while True:
-        try: 
+    while isrunning.is_set():
+        try:        
             dev = InputDevice('/dev/input/event1')
             for event in dev.read_loop():
                if event.type == ecodes.EV_KEY:
                     events.put(event)
         except:
-            logging.warning('Waiting for input device')
+            logging.info('Waiting for input device')
             time.sleep(1)
 
 
 if __name__ == '__main__':
+    #Start screen and reader
     scanner = HS_Scan()
     canreader.start()
 
-    t = Thread(target=keyboardworker)
-    t.start()
+    #Start can senders
+    logging.warning('Starting OBD senders')
+    writers = []
+    for pid in canwriter.sendpids:
+        writer = canwriter.CanWriter(canbus='vcan0', pid=pid, isrunning=isrunning)
+        writer.start()
+        writers.append(writer)
+
+        time.sleep(random.random())
+
+    logging.warning('Starting keybord reader')
+    keyboard = Thread(target=keyboardworker)
+    keyboard.start()
 
     curscreen = 0
 
     while True:
-        if not events.empty():
-            event = events.get_nowait()
-            logging.warning(event)
-            if event.type == 1 and event.value == 1:
-                if event.code == 115:
-                    curscreen += 1
-                if event.code == 114:
-                    curscreen -= 1
+        try:
+            if not events.empty():
+                event = events.get_nowait()
+                logging.warning(event)
+                if event.type == 1 and event.value == 1:
+                    if event.code == 115:
+                        curscreen += 1
+                    if event.code == 114:
+                        curscreen -= 1
 
-                if curscreen >= len(screens):
-                    curscreen=0
-                if curscreen < 0:
-                    curscreen = len(screens) -1 
-        
-        
-        time.sleep(0.1)
-        scanner.updateKPIs(curscreen)
+                    if curscreen >= len(screens):
+                        curscreen=0
+                    if curscreen < 0:
+                        curscreen = len(screens) -1 
+            
+            
+            time.sleep(0.1)
+            scanner.updateKPIs(curscreen)
+        except KeyboardInterrupt:
+            isrunning.clear()
+            break
 
+    keyboard.join()
+    canreader.join()
+
+    #Shut down writers. 
+    for writer in writers:
+        writer.join()       
+
+    exit(0)
