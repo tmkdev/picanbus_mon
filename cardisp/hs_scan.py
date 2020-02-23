@@ -66,7 +66,7 @@ class HS_Scan(object):
         pygame.mouse.set_visible(False)
         pygame.font.init()
         
-        self.font1 = pygame.font.Font('fonts/segoeui.ttf', 48)
+        self.font1 = pygame.font.Font('fonts/segoeui.ttf', 40)
         self.font2 = pygame.font.Font('fonts/segoeui.ttf', 96)
 
         self.displayimage("cardisp/images/v-black.jpg")
@@ -113,27 +113,44 @@ class HS_Scan(object):
 
 
     def perfscreen(self):
-        perfs = ['0-60', '0-100', '1/4 Mile']
-
         self.screen.fill(self.black)
 
-        y=0
+        pt = canreader.perftracker
 
-        for perf in perfs:
-            textImage = self.font1.render(f'{perf}: {canreader.perfdata[perf]:0.2f}s', True, (255,255,255))
-            self.screen.blit(textImage, 
-                    (0,y))
-            y+=45
+        y=42
 
-            textImage = self.font2.render(f"State: {canreader.PERFSTATES[canreader.perfdata['state']]}", True, (255,255,255))
+        textImage = self.font1.render(f'Current', True, (255,255,255))
+        self.screen.blit(textImage, 
+                (40,0))
+
+        textImage = self.font1.render(f'Last', True, (255,255,255))
+        self.screen.blit(textImage, 
+                (500,0))
+
+
+        for perf in pt.current_result:
+            textImage = self.font1.render(f'{perf}: {pt.current_result[perf]:0.2f}s', True, (255,255,255))
             self.screen.blit(textImage, 
-                    (40,200))
-            textImage = self.font2.render(f"ET(s): {canreader.perfdata['curr_et']:0.2f}s", True, (255,255,255))
+                    (40,y))
+           
+            textImage = self.font1.render(f'{perf}: {pt.results[-1][perf]:0.2f}s', True, (255,255,255))
             self.screen.blit(textImage, 
-                    (40,300))
-            textImage = self.font2.render(f"Dist: {canreader.perfdata['distance']:0.4f}mi", True, (255,255,255))
-            self.screen.blit(textImage, 
-                    (40,400))
+                    (500,y))
+           
+            y+=42
+
+        for perf in pt.results[-1]:
+            y+=42
+
+        textImage = self.font2.render(f"{pt.PERFSTATES[pt.state]}", True, (255,255,255))
+        self.screen.blit(textImage, 
+                (40,350))
+        textImage = self.font2.render(f"ET(s): {pt.curr_et:0.2f}s", True, (255,255,255))
+        self.screen.blit(textImage, 
+                (40,450))
+        textImage = self.font2.render(f"Dist: {pt.distance:0.4f}mi", True, (255,255,255))
+        self.screen.blit(textImage, 
+                (40,550))
 
         #draw gagues
         for y in range(len(perfgauges)):

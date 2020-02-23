@@ -7,6 +7,7 @@ import datetime
 from collections import namedtuple, deque
 from pprint import pprint
 import logging
+from enum import Enum
 
 import can
 import cantools
@@ -15,13 +16,6 @@ import cantools
 CanSignal = namedtuple('CanSignal', ['name', 'minimum', 'maximum', 'unit', 'comment'])
 
 class CanReader(Thread):
-    UNKNOWN = 0
-    READY = 1
-    RUNNING = 2
-    COMPLETE = 3
-
-    PERFSTATES = ['Not Ready', 'Ready', 'Running', 'Complete']
-
     def __init__(self, group=None, target=None, name=None,
                  canbus='vcan0', bustype='socketcan', dbc=[], maxlen=200, isrunning=Event()):
         super(CanReader,self).__init__(group=group, target=target, 
@@ -34,15 +28,6 @@ class CanReader(Thread):
             logging.warning(f'Loading {dbcfile} into reader database.')
             self.db.add_dbc_file(dbcfile)
         self.data = {}
-        self.perfdata = {
-            'state': CanReader.UNKNOWN,
-            'curr_et': 0,
-            'distance': 0,
-            '0-60': 0,
-            '0-100': 0,
-            '1/4 Mile': 0,
-            'starttime': 0,
-        }
         self.cansignals = {}
 
         self.running = isrunning
@@ -60,8 +45,8 @@ class CanReader(Thread):
         for sig in self.cansignals:
             self.data[sig] = deque(maxlen=maxlen)
 
+        self.perftracker = PerfTracker()
         
-
 
     def run(self):
         while self.running.is_set():
@@ -74,7 +59,7 @@ class CanReader(Thread):
                         self.data[sig].append( (datetime.datetime.now(), newdata[sig]) )
 
                         if sig == 'speed_average_non_driven':
-                            self.perftracker()
+                            self.perftracker.tick(self.data[sig])
 
                 except KeyError:
                     pass
@@ -82,37 +67,73 @@ class CanReader(Thread):
                     logging.exception(f'Packet decode failed for arbid {message.arbitration_id}')
 
 
-    def perftracker(self):
-        if self.perfdata['state'] in (CanReader.UNKNOWN, CanReader.RUNNING, CanReader.COMPLETE):
-            #Are we stopped?
-            if self.data['speed_average_non_driven'][-1][1] == 0.0:
-                self.perfdata['state'] = CanReader.READY
-        
-        if self.perfdata['state'] == CanReader.READY:
-            if self.data['speed_average_non_driven'][-1][1] > 0.0:
-                self.perfdata['state'] = CanReader.RUNNING
-                self.perfdata['starttime'] = self.data['speed_average_non_driven'][-1][0]
-                self.perfdata['distance'] = 0
-                self.perfdata['curr_et'] = 0
-                self.perfdata['0-60'] = 0
-                self.perfdata['0-100'] = 0
-                self.perfdata['1/4 Mile'] = 0
+class PerfTracker(object):
+    UNKNOWN = 0
+    READY = 1
+    RUNNING = 2
+    COMPLETE = 3
 
-        if self.perfdata['state'] == CanReader.RUNNING:
-            self.perfdata['curr_et'] = (self.data['speed_average_non_driven'][-1][0] - self.perfdata['starttime']).total_seconds()
-            self.perfdata['distance'] += (
-                ((self.data['speed_average_non_driven'][-1][1] + self.data['speed_average_non_driven'][-2][1])/2) * 0.27777777 *
-                (self.data['speed_average_non_driven'][-1][0] - self.data['speed_average_non_driven'][-2][0]).total_seconds()
+    PERFSTATES = ['Not Ready', 'Ready', 'Running', 'Complete']
+
+    def __init__(self):
+        self.results = [self.genPerfResult()]
+
+        self.current_result = self.genPerfResult()
+
+        self.state = PerfTracker.UNKNOWN
+        self.curr_et = 0
+        self.distance = 0
+        self.starttime = 0
+
+    def genPerfResult(self):
+        return {
+            '0-60': 0,
+            '0-100': 0,
+            '1/8 Mile': 0,
+            '1/8 Mile MPH': 0,
+            '1/4 Mile': 0,
+            '1/4 Mile MPH': 0, 
+        }
+
+    def tick(self, speeddata):
+        if self.state in (PerfTracker.UNKNOWN, PerfTracker.RUNNING, PerfTracker.COMPLETE):
+            if speeddata[-1][1] == 0.0:
+                self.state = PerfTracker.READY
+        
+        if self.state == PerfTracker.READY:
+            if speeddata[-1][1] > 0.0:
+                self.state = PerfTracker.RUNNING
+                self.resetcounters(speeddata)
+
+        if self.state == PerfTracker.RUNNING:
+            self.curr_et = (speeddata[-1][0] - self.starttime).total_seconds()
+            self.distance += (
+                ((speeddata[-1][1] + speeddata[-2][1])/2) * 0.27777777 *
+                (speeddata[-1][0] - speeddata[-2][0]).total_seconds()
                 * 0.000621371
             ) 
 
-            if self.data['speed_average_non_driven'][-1][1] > 96.5 and self.perfdata['0-60']==0:
-                self.perfdata['0-60'] = self.perfdata['curr_et']          
-            if self.data['speed_average_non_driven'][-1][1] > 160.934 and self.perfdata['0-100']==0:
-                self.perfdata['0-100'] = self.perfdata['curr_et']          
-            if self.perfdata['distance'] > 0.25 and self.perfdata['1/4 Mile']==0:
-                self.perfdata['1/4 Mile'] = self.perfdata['curr_et']
-            
+            if speeddata[-1][1] > 96.5 and self.current_result['0-60'] == 0:
+                self.current_result['0-60'] = self.curr_et    
+
+            if speeddata[-1][1] > 160.934 and self.current_result['0-100']==0:
+                self.current_result['0-100'] = self.curr_et         
+
+            if self.distance > 0.125 and self.current_result['1/8 Mile']==0:
+                self.current_result['1/8 Mile'] = self.curr_et
+                self.current_result['1/8 Mile MPH'] = speeddata[-1][1] * 0.621371
+
+            if self.distance > 0.25 and self.current_result['1/4 Mile']==0:
+                self.current_result['1/4 Mile'] = self.curr_et
+                self.current_result['1/4 Mile MPH'] = speeddata[-1][1] * 0.621371
+
+    def resetcounters(self, speeddata):
+            self.starttime = speeddata[-1][0]
+            self.distance = 0
+            self.curr_et = 0
+            self.results.append(self.current_result)
+            self.current_result = self.genPerfResult()
+
 
         
 if __name__ == '__main__':
