@@ -22,6 +22,12 @@ defaultbool  = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertco
                                     font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
                                     outlinecolor="#FFFFFF", sweeptype=ImageGauge.BOOL, textcolor='#FFFFFF' )
 
+textgauge  = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
+                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
+                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.TEXT, textcolor='#FFFFFF' )
+
+
 screens = [
     # Driving Parms
     [
@@ -102,11 +108,11 @@ screens = [
                     gaugeconfig=ImageGaugeConfig(displayname="TransTemp", unit="C", altunit=None, 
                     min=-40, max=215, alertval=190, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='transmission_torque_converter_clutch_mode', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=textgauge, 
                     gaugeconfig=ImageGaugeConfig(displayname="ClutchMode", unit=None, altunit=None, 
                     min=0, max=100, alertval=None, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='requested_gear', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=textgauge, 
                     gaugeconfig=ImageGaugeConfig(displayname="ReqGear", unit=None, altunit=None, 
                     min=0, max=16, alertval=None, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='engine_speed', 
@@ -120,7 +126,7 @@ screens = [
         GaugeDef(name='Estimated_Torque_Ratio', 
                     gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
                     gaugeconfig=ImageGaugeConfig(displayname="TrqRatio", unit=None, altunit=None, 
-                    min=-64, max=64, alertval=None, alertvallow=None, fmtstring='{0:.0f}'))),
+                    min=-64, max=64, alertval=None, alertvallow=None, fmtstring='{0:.2f}'))),
         GaugeDef(name='engine_torque_actual_ex', 
                     gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
                     gaugeconfig=ImageGaugeConfig(displayname="Torque", unit="ftlb", altunit=None, 
@@ -192,8 +198,8 @@ screens = [
                     gaugeconfig=ImageGaugeConfig(displayname="FS_AL_C", unit="%", altunit=None, 
                     min=0, max=100, alertval=10, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='Engine_Fuel_Control_State', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
-                    gaugeconfig=ImageGaugeConfig(displayname="E_FC_State", unit="None", altunit=None, 
+                    gaugeclass=ImageGauge(gaugestyle=textgauge, 
+                    gaugeconfig=ImageGaugeConfig(displayname="E_FC_State", unit=None, altunit=None, 
                     min=0, max=100, alertval=None, alertvallow=None, fmtstring='{0}'))),
     ],
     #OTHERS...
@@ -216,20 +222,32 @@ screens = [
                     min=0, max=100, alertval=None, alertvallow=10, fmtstring='{0:.0f}'))),
         GaugeDef(name='engine_run_active', 
                     gaugeclass=ImageGauge(gaugestyle=defaultbool, 
-                    gaugeconfig=ImageGaugeConfig(displayname="EngRun", unit="", altunit=None, 
+                    gaugeconfig=ImageGaugeConfig(displayname="EngRun", unit=None, altunit=None, 
                     min=0, max=1, alertval=None, alertvallow=0, fmtstring='{0}'))),
         GaugeDef(name='engine_idle_active', 
                     gaugeclass=ImageGauge(gaugestyle=defaultbool, 
-                    gaugeconfig=ImageGaugeConfig(displayname="Idle", unit="", altunit=None, 
+                    gaugeconfig=ImageGaugeConfig(displayname="Idle", unit=None, altunit=None, 
                     min=0, max=1, alertval=1, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='system_power_mode', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
-                    gaugeconfig=ImageGaugeConfig(displayname="SysPower", unit="", altunit=None, 
+                    gaugeclass=ImageGauge(gaugestyle=textgauge, 
+                    gaugeconfig=ImageGaugeConfig(displayname="SysPower", unit=None, altunit=None, 
                     min=0, max=1, alertval=None, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='power_mode_master_accessory', 
                     gaugeclass=ImageGauge(gaugestyle=defaultbool, 
-                    gaugeconfig=ImageGaugeConfig(displayname="AccPower", unit="", altunit=None, 
+                    gaugeconfig=ImageGaugeConfig(displayname="AccPower", unit=None, altunit=None, 
                     min=0, max=1, alertval=None, alertvallow=0, fmtstring='{0}'))),
     ]
 
+]
+
+
+perfgauges = [
+    GaugeDef(name='speed_average_driven', 
+                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeconfig=ImageGaugeConfig(displayname="Speed", unit="kph", altunit="mph", 
+                    min=0, max=256, alertval=140, alertvallow=None, fmtstring='{0:.0f}'))),
+    GaugeDef(name='accelerator_actual_position', 
+                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeconfig=ImageGaugeConfig(displayname="Throttle", unit="%", 
+                    altunit=None, min=0, max=100, alertval=95, alertvallow=None, fmtstring='{0:.0f}'))),
 ]

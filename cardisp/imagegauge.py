@@ -14,12 +14,13 @@ class ImageGauge(object):
     STD = 1
     DELTA = 2
     BOOL = 3
+    TEXT = 4
 
     def __init__(self, gaugestyle, gaugeconfig):
         self.gaugestyle = gaugestyle
         self.gaugeconfig = gaugeconfig
-        self.fonttest = ImageFont.truetype(self.gaugestyle.font, size=12)
-        self.fontsmall = ImageFont.truetype(self.gaugestyle.font, size=35)
+        self.fonttext = ImageFont.truetype(self.gaugestyle.font, size=24)
+        self.fontsmall = ImageFont.truetype(self.gaugestyle.font, size=32)
         self.fontlarge = ImageFont.truetype(self.gaugestyle.font, size=110)
 
 
@@ -74,8 +75,14 @@ class ImageGauge(object):
 
         valtext = self._valtext(value)
 
+        
+        if self.gaugestyle.sweeptype == ImageGauge.TEXT:
+            tf = self.fontsmall
+        else:
+            tf = self.fontlarge
+        
         fontbox1 = draw.textsize(text, font=self.fontsmall)
-        fontbox2 = draw.textsize(valtext, font=self.fontlarge)
+        fontbox2 = draw.textsize(valtext, font=tf)
 
         draw.text( (self.gaugestyle.width / 2-(fontbox1[0]/2),
                     self.gaugestyle.height-fontbox1[1] - self.gaugestyle.gutter), 
@@ -86,7 +93,7 @@ class ImageGauge(object):
                     ceny - fontbox2[1]/2), 
                     valtext, 
                     fill=self.gaugestyle.textcolor, 
-                    font=self.fontlarge)
+                    font=tf)
 
         del draw
 
@@ -177,7 +184,7 @@ class ImageGauge(object):
 
 if __name__ == '__main__':
     teststyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
-                                    barcolor="#0000FF", barbgcolor="#222222", sweepstart=140, sweepend=400,
+                                    barcolor="#0000FF", barbgcolor ="#222222", sweepstart=140, sweepend=400,
                                     font='segoeui.ttf', sweepthick=25, gutter=20, outline=4,
                                     outlinecolor='#FFFFFF', sweeptype=ImageGauge.BOOL, textcolor='#FFFFFF' )
 

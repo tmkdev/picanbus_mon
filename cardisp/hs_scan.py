@@ -66,12 +66,16 @@ class HS_Scan(object):
         pygame.mouse.set_visible(False)
         pygame.font.init()
         
+        self.font1 = pygame.font.Font('fonts/segoeui.ttf', 48)
+        self.font2 = pygame.font.Font('fonts/segoeui.ttf', 96)
+
         self.displayimage("cardisp/images/v-black.jpg")
 
     
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
         pass
+
 
     def displayimage(self, imagename):
         self.screen.fill(self.black)
@@ -80,6 +84,7 @@ class HS_Scan(object):
         self.screen.blit(startuplogo, (0 ,0))
         
         pygame.display.update()
+
 
     def updateKPIs(self, curscreen):
         self.screen.fill(self.black)
@@ -102,8 +107,48 @@ class HS_Scan(object):
 
         pygame.display.update()
 
+
     def updateGraph(self, kpi):
         raise NotImplemented
+
+
+    def perfscreen(self):
+        perfs = ['0-60', '0-100', '1/4 Mile']
+
+        self.screen.fill(self.black)
+
+        y=0
+
+        for perf in perfs:
+            textImage = self.font1.render(f'{perf}: {canreader.perfdata[perf]:0.2f}s', True, (255,255,255))
+            self.screen.blit(textImage, 
+                    (0,y))
+            y+=45
+
+            textImage = self.font2.render(f"State: {canreader.PERFSTATES[canreader.perfdata['state']]}", True, (255,255,255))
+            self.screen.blit(textImage, 
+                    (40,200))
+            textImage = self.font2.render(f"ET(s): {canreader.perfdata['curr_et']:0.2f}s", True, (255,255,255))
+            self.screen.blit(textImage, 
+                    (40,300))
+            textImage = self.font2.render(f"Dist: {canreader.perfdata['distance']:0.4f}mi", True, (255,255,255))
+            self.screen.blit(textImage, 
+                    (40,400))
+
+        #draw gagues
+        for y in range(len(perfgauges)):
+                gauge = perfgauges[y]
+                try:
+                    val = canreader.data[gauge.name][-1][1]
+                except:
+                    val = None
+
+                pilimage = gauge.gaugeclass.drawval(val)
+                raw_str = pilimage.tobytes("raw", 'RGB')
+                surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
+                self.screen.blit(surface, (960,y*360))
+
+        pygame.display.update()
 
     
 def keyboardworker():
@@ -157,7 +202,8 @@ if __name__ == '__main__':
             
             
             time.sleep(0.1)
-            scanner.updateKPIs(curscreen)
+            #scanner.updateKPIs(curscreen)
+            scanner.perfscreen()
         except KeyboardInterrupt:
             isrunning.clear()
             break
