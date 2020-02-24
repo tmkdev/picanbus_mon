@@ -185,7 +185,10 @@ if __name__ == '__main__':
     scanner = HS_Scan()
     canreader.start()
 
-    perfscreens = [ scanner.perfscreen ]
+    perfscreens = itertools.cycle([ scanner.perfscreen ])
+    perfscreen = next(perfscreens)
+    curscreen = 0
+    mode = 0
 
     #Start can senders
     logging.warning('Starting OBD senders')
@@ -201,7 +204,7 @@ if __name__ == '__main__':
     keyboard = Thread(target=keyboardworker)
     keyboard.start()
 
-    curscreen = 0
+
     
     while True:
         try:
@@ -212,9 +215,15 @@ if __name__ == '__main__':
                 if event.type == 1 and event.value == 1:
                     if event.code == 115:
                         curscreen += 1
+                        mode=0
                     if event.code == 114:
                         curscreen -= 1
- 
+                        mode=0
+
+                    if event.code in [165, 163]:
+                        mode=1
+                        perfscreen = next(perfscreens)
+
                     if curscreen >= len(screens):
                         curscreen=0
                     if curscreen < 0:
@@ -222,8 +231,11 @@ if __name__ == '__main__':
             
             
             time.sleep(0.1)
-            scanner.updateKPIs(curscreen)
-            #scanner.perfscreen()
+            if mode == 0:
+                scanner.updateKPIs(curscreen)
+            elif mode == 1:
+                perfscreen()
+    
         except KeyboardInterrupt:
             isrunning.clear()
             break
