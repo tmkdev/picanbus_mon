@@ -66,10 +66,10 @@ class HS_Scan(object):
         pygame.mouse.set_visible(False)
         pygame.font.init()
         
-        self.font1 = pygame.font.Font('fonts/segoeui.ttf', 40)
-        self.font2 = pygame.font.Font('fonts/segoeui.ttf', 96)
+        self.font1 = pygame.font.Font(g_font, 40)
+        self.font2 = pygame.font.Font(g_font, 96)
 
-        self.displayimage("cardisp/images/v-black.jpg")
+        self.displayimage(g_bootimage)
 
     
     def __del__(self):
@@ -129,11 +129,11 @@ class HS_Scan(object):
 
 
         for perf in pt.current_result:
-            textImage = self.font1.render(f'{perf}: {pt.current_result[perf]:0.2f}s', True, (255,255,255))
+            textImage = self.font1.render(f'{perf}: {pt.current_result[perf]:0.2f}', True, (255,255,255))
             self.screen.blit(textImage, 
                     (40,y))
            
-            textImage = self.font1.render(f'{perf}: {pt.results[-1][perf]:0.2f}s', True, (255,255,255))
+            textImage = self.font1.render(f'{perf}: {pt.results[-1][perf]:0.2f}', True, (255,255,255))
             self.screen.blit(textImage, 
                     (500,y))
            
@@ -142,13 +142,13 @@ class HS_Scan(object):
         for perf in pt.results[-1]:
             y+=42
 
-        textImage = self.font2.render(f"{pt.PERFSTATES[pt.state]}", True, (255,255,255))
+        textImage = self.font2.render(f"ET: {pt.curr_et:0.2f}s", True, (255,255,255))
         self.screen.blit(textImage, 
                 (40,350))
-        textImage = self.font2.render(f"ET(s): {pt.curr_et:0.2f}s", True, (255,255,255))
+        textImage = self.font2.render(f"Dist: {pt.distance:0.4f}mi", True, (255,255,255))
         self.screen.blit(textImage, 
                 (40,450))
-        textImage = self.font2.render(f"Dist: {pt.distance:0.4f}mi", True, (255,255,255))
+        textImage = self.font2.render(f"{pt.PERFSTATES[pt.state]}", True, (255,255,255))
         self.screen.blit(textImage, 
                 (40,550))
 
@@ -185,6 +185,8 @@ if __name__ == '__main__':
     scanner = HS_Scan()
     canreader.start()
 
+    perfscreens = [ scanner.perfscreen ]
+
     #Start can senders
     logging.warning('Starting OBD senders')
     writers = []
@@ -200,18 +202,19 @@ if __name__ == '__main__':
     keyboard.start()
 
     curscreen = 0
-
+    
     while True:
         try:
             if not events.empty():
                 event = events.get_nowait()
                 logging.warning(event)
+                print(event.code)
                 if event.type == 1 and event.value == 1:
                     if event.code == 115:
                         curscreen += 1
                     if event.code == 114:
                         curscreen -= 1
-
+ 
                     if curscreen >= len(screens):
                         curscreen=0
                     if curscreen < 0:
@@ -219,8 +222,8 @@ if __name__ == '__main__':
             
             
             time.sleep(0.1)
-            #scanner.updateKPIs(curscreen)
-            scanner.perfscreen()
+            scanner.updateKPIs(curscreen)
+            #scanner.perfscreen()
         except KeyboardInterrupt:
             isrunning.clear()
             break

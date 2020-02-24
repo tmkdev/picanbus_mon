@@ -73,7 +73,7 @@ class PerfTracker(object):
     RUNNING = 2
     COMPLETE = 3
 
-    PERFSTATES = ['Not Ready', 'Ready', 'Running', 'Complete']
+    PERFSTATES = ['Stop to Reset', 'Ready', 'Running', 'Complete']
 
     def __init__(self):
         self.results = [self.genPerfResult()]

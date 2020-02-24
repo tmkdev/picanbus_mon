@@ -7,44 +7,66 @@ from imagegauge import *
 
 GaugeDef = namedtuple('GuageDef', ['name', 'gaugeclass'])
 
-defaultstyle = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
-                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
-                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.STD, textcolor='#FFFFFF' )
+g_red="#FF0000"
+g_blue="#0000FF"
+g_cyan="#00FFFF"
+g_white="#FFFFFF"
+g_grey="#222222"
+g_alert="#f0b01d"
+g_black="#000000"
 
-defaultdelta  = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
-                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
-                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.DELTA, textcolor='#FFFFFF' )
+g_font = 'fonts/segoeui.ttf'
 
-defaultbool  = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
-                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
-                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.BOOL, textcolor='#FFFFFF' )
+g_bootimage = "cardisp/images/v-black.jpg"
 
-textgauge  = ImageGaugeStyle(width=320, height=360, bgcolor="#000000", alertcolor="#f0b01d",
-                                    barcolor="#FF0000", barbgcolor="#222222", sweepstart=140, sweepend=400,
-                                    font='fonts/segoeui.ttf', sweepthick=25, gutter=20, outline=3,
-                                    outlinecolor="#FFFFFF", sweeptype=ImageGauge.TEXT, textcolor='#FFFFFF' )
+base_red = ImageGaugeStyle(width=320, height=360, bgcolor=g_black, alertcolor=g_alert,
+                                    barcolor=g_red, barbgcolor=g_grey, sweepstart=140, sweepend=400,
+                                    font=g_font, sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor=g_white, sweeptype=ImageGauge.STD, textcolor=g_white )
+
+base_blue = ImageGaugeStyle(width=320, height=360, bgcolor=g_black, alertcolor=g_alert,
+                                    barcolor=g_blue, barbgcolor=g_grey, sweepstart=140, sweepend=400,
+                                    font=g_font, sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor=g_white, sweeptype=ImageGauge.STD, textcolor=g_white )
+
+base_cyan = ImageGaugeStyle(width=320, height=360, bgcolor=g_black, alertcolor=g_alert,
+                                    barcolor=g_cyan, barbgcolor=g_grey, sweepstart=140, sweepend=400,
+                                    font=g_font, sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor=g_white, sweeptype=ImageGauge.STD, textcolor=g_white )
+
+defaultdelta  = ImageGaugeStyle(width=320, height=360, bgcolor=g_black, alertcolor=g_alert,
+                                    barcolor=g_red, barbgcolor=g_grey, sweepstart=140, sweepend=400,
+                                    font=g_font, sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor=g_white, sweeptype=ImageGauge.DELTA, textcolor=g_white )
+
+defaultbool  = ImageGaugeStyle(width=320, height=360, bgcolor=g_black, alertcolor=g_alert,
+                                    barcolor=g_red, barbgcolor=g_grey, sweepstart=140, sweepend=400,
+                                    font=g_font, sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor=g_white, sweeptype=ImageGauge.BOOL, textcolor=g_white )
+
+textgauge  = ImageGaugeStyle(width=320, height=360, bgcolor=g_black, alertcolor=g_alert,
+                                    barcolor=g_red, barbgcolor=g_grey, sweepstart=140, sweepend=400,
+                                    font=g_font, sweepthick=25, gutter=20, outline=3,
+                                    outlinecolor=g_white, sweeptype=ImageGauge.TEXT, textcolor=g_white )
 
 
 screens = [
     # Driving Parms
     [
         GaugeDef(name='accelerator_actual_position', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Throttle", unit="%", 
                     altunit=None, min=0, max=100, alertval=95, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='platform_brake_position', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Brake", unit="%", altunit=None, 
                     min=0, max=100, alertval=65, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='steering_wheel_angle', 
                     gaugeclass=ImageGauge(gaugestyle=defaultdelta, 
                     gaugeconfig=ImageGaugeConfig(displayname="Steering", unit="Deg", altunit=None, 
                     min=-2048, max=2048, alertval=None, alertvallow=None, fmtstring='{0:.0f}'))),
-        GaugeDef(name='speed_average_driven', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+        GaugeDef(name='speed_average_non_driven', 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Speed", unit="kph", altunit="mph", 
                     min=0, max=256, alertval=140, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='tcs_active', 
@@ -66,45 +88,45 @@ screens = [
     ],
     [
         GaugeDef(name='Commanded_Air_Fuel_Ratio', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="AFR(CMD)", unit=None, altunit=None, 
                     min=0, max=32, alertval=16, alertvallow=12, fmtstring='{0:.1f}'))),
         GaugeDef(name='boost_pressure_indication', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Boost", unit="%", altunit=None, 
                     min=0, max=100, alertval=65, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='engine_intake_temperature', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_cyan, 
                     gaugeconfig=ImageGaugeConfig(displayname="IAT", unit="C", altunit="F", 
                     min=-40, max=215, alertval=60, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='engine_coolant_temperature', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_blue, 
                     gaugeconfig=ImageGaugeConfig(displayname="ECT", unit="C", altunit="F", 
                     min=-40, max=215, alertval=100, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='engine_oil_pressure', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="OilPres", unit="kPa", altunit=None, 
                     min=0, max=1020, alertval=None, alertvallow=120, fmtstring='{0}'))),
         GaugeDef(name='engine_speed', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="RPM", unit=None, altunit=None, 
                     min=0, max=8000, alertval=6500, alertvallow=400, fmtstring='{0:.0f}'))),
         GaugeDef(name='Fan_Speed', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="FanSpeed", unit="%", altunit=None, 
                     min=0, max=100, alertval=90, alertvallow=None, fmtstring='{0:.1f}'))),
         GaugeDef(name='engine_torque_actual_ex', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Torque", unit="ftlb", altunit=None, 
                     min=-848, max=1200, alertval=800, alertvallow=-200, fmtstring='{0:.0f}'))),
     ],
     [
         GaugeDef(name='transmission_commanded_gear', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Gear", unit=None, altunit=None, 
                     min=0, max=16, alertval=None, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='trans_oil_temp', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="TransTemp", unit="C", altunit=None, 
                     min=-40, max=215, alertval=190, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='transmission_torque_converter_clutch_mode', 
@@ -116,19 +138,19 @@ screens = [
                     gaugeconfig=ImageGaugeConfig(displayname="ReqGear", unit=None, altunit=None, 
                     min=0, max=16, alertval=None, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='engine_speed', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="RPM", unit=None, altunit=None, 
                     min=0, max=8000, alertval=6500, alertvallow=400, fmtstring='{0:.0f}'))),
         GaugeDef(name='Output_Shaft_Angular_Velocity', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="TransRPM", unit=None, altunit=None, 
                     min=0, max=8000, alertval=None, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='Estimated_Torque_Ratio', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="TrqRatio", unit=None, altunit=None, 
                     min=-64, max=64, alertval=None, alertvallow=None, fmtstring='{0:.2f}'))),
         GaugeDef(name='engine_torque_actual_ex', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Torque", unit="ftlb", altunit=None, 
                     min=-848, max=1200, alertval=800, alertvallow=-200, fmtstring='{0:.0f}'))),
     ],
@@ -147,7 +169,7 @@ screens = [
                     gaugeconfig=ImageGaugeConfig(displayname="Timing", unit="Deg", altunit=None, 
                     min=-64, max=64, alertval=None, alertvallow=-5, fmtstring='{0:.0f}'))),                   
         GaugeDef(name='O_CalcEngineLoad', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Load", unit="%", altunit=None, 
                     min=0, max=100, alertval=85, alertvallow=None, fmtstring='{0:.0f}'))),                   
         GaugeDef(name='O_LongFuelTrimBank1', 
@@ -159,42 +181,42 @@ screens = [
                     gaugeconfig=ImageGaugeConfig(displayname="LTFTB2", unit="%", altunit=None, 
                     min=-100, max=100, alertval=10, alertvallow=-10, fmtstring='{0:.1f}'))),
         GaugeDef(name='engine_intake_temperature', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_cyan, 
                     gaugeconfig=ImageGaugeConfig(displayname="IAT", unit="C", altunit="F", 
                     min=-40, max=215, alertval=60, alertvallow=None, fmtstring='{0:.0f}'))),
         GaugeDef(name='OE_IntakeAirTemp2', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_cyan, 
                     gaugeconfig=ImageGaugeConfig(displayname="IAT2", unit="C", altunit="F", 
                     min=-40, max=215, alertval=60, alertvallow=None, fmtstring='{0:.0f}'))),
     ],
     #FUEL
     [
         GaugeDef(name='Advance_Fuel_Flow_Rate', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="AdvanceFF", unit="g/s", altunit=None, 
                     min=0, max=84, alertval=None, alertvallow=None, fmtstring='{0:.1f}'))),
         GaugeDef(name='Instantaneous_Fuel_Flow_Rate', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="InstantFF", unit="g/s", altunit=None, 
                     min=0, max=84, alertval=None, alertvallow=None, fmtstring='{0:.1f}'))),
         GaugeDef(name='fuel_consumption_rate', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="FuelCompRate", unit="l/h", altunit=None, 
                     min=0, max=103, alertval=None, alertvallow=None, fmtstring='{0:.1f}'))),
         GaugeDef(name='fuel_level_percent', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="FuelLevel", unit="%", altunit=None, 
                     min=0, max=100, alertval=None, alertvallow=10, fmtstring='{0:.1f}'))),
         GaugeDef(name='Fuel_Delivery_Pressue_Requested', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="FSREQ_P", unit="kpa", altunit=None, 
                     min=0, max=1023, alertval=None, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='fuel_system_estimated_pressure', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="FSEST_P", unit="KPA", altunit=None, 
                     min=0, max=1023, alertval=None, alertvallow=10, fmtstring='{0}'))),
         GaugeDef(name='Fuel_Alcohol_Composition', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="FS_AL_C", unit="%", altunit=None, 
                     min=0, max=100, alertval=10, alertvallow=None, fmtstring='{0}'))),
         GaugeDef(name='Engine_Fuel_Control_State', 
@@ -205,7 +227,7 @@ screens = [
     #OTHERS...
     [
         GaugeDef(name='Fan_Speed', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="FanSpeed", unit="%", altunit=None, 
                     min=0, max=100, alertval=90, alertvallow=None, fmtstring='{0:.1f}'))),
         GaugeDef(name='Egine_Cooling_Fan_Adjustment', 
@@ -217,7 +239,7 @@ screens = [
                     gaugeconfig=ImageGaugeConfig(displayname="GenSetpoint", unit="%", altunit=None, 
                     min=-100, max=100, alertval=None, alertvallow=None, fmtstring='{0:.1f}'))),
         GaugeDef(name='Oil_Life_Remaining', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="OilLifeRem", unit="%", altunit=None, 
                     min=0, max=100, alertval=None, alertvallow=10, fmtstring='{0:.0f}'))),
         GaugeDef(name='engine_run_active', 
@@ -243,11 +265,11 @@ screens = [
 
 perfgauges = [
     GaugeDef(name='speed_average_driven', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Speed", unit="kph", altunit="mph", 
                     min=0, max=256, alertval=140, alertvallow=None, fmtstring='{0:.0f}'))),
     GaugeDef(name='accelerator_actual_position', 
-                    gaugeclass=ImageGauge(gaugestyle=defaultstyle, 
+                    gaugeclass=ImageGauge(gaugestyle=base_red, 
                     gaugeconfig=ImageGaugeConfig(displayname="Throttle", unit="%", 
                     altunit=None, min=0, max=100, alertval=95, alertvallow=None, fmtstring='{0:.0f}'))),
 ]
