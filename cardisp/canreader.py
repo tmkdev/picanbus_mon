@@ -99,9 +99,9 @@ class AccelTracker(object):
 
     def setminmax(self):
         self.accelminmax[0] = min(self.accelminmax[0], self.accel)
-        self.accelminmax[0] = max(self.accelminmax[1], self.accel)
+        self.accelminmax[1] = max(self.accelminmax[1], self.accel)
         self.latminmax[0] = min(self.latminmax[0], self.lat)
-        self.latminmax[0] = max(self.latminmax[1], self.lat)
+        self.latminmax[1] = max(self.latminmax[1], self.lat)
 
 
 class PerfTracker(object):
