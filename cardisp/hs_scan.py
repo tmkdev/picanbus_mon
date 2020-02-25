@@ -9,11 +9,10 @@ import itertools
 from threading import Thread, Event
 from queue import Queue
 
-from imagemeatball import ImageMeatball, ImageMeatballStyle
-from config import *
+import config as gcfg
 from canreader import CanReader
 import canwriter
-from evdev import *
+from evdev import InputDevice, ecodes
 
 events = Queue()
 
@@ -62,11 +61,11 @@ class HS_Scan(object):
         logging.warning("Framebuffer size: %d x %d" % (size[0], size[1]))
         self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
         pygame.mouse.set_visible(False)
-        pygame.font.init()      
-        self.font1 = pygame.font.Font(g_font, 40)
-        self.font2 = pygame.font.Font(g_font, 96)
+        pygame.font.init()
+        self.font1 = pygame.font.Font(gcfg.g_font, 40)
+        self.font2 = pygame.font.Font(gcfg.g_font, 96)
 
-        self.displayimage(g_bootimage)
+        self.displayimage(gcfg.g_bootimage)
 
     def __del__(self):
         "Destructor to make sure pygame shuts down, etc."
@@ -86,12 +85,14 @@ class HS_Scan(object):
         for x in range(4):
             for y in range(2):
                 i = x + (4*y)
-                gauge = screens[curscreen][i]
+                gauge = gcfg.screens[curscreen][i]
 
                 try:
                     val = canreader.data[gauge.name][-1][1]
-                except:
+                except IndexError:
                     val = None
+                except Exception:
+                    logging.exception('KPI conversion failed')
 
                 pilimage = gauge.gaugeclass.drawval(val)
                 raw_str = pilimage.tobytes("raw", 'RGB')
@@ -117,8 +118,8 @@ class HS_Scan(object):
         for perf in pt.current_result:
             textImage = self.font1.render(f'{perf}: {pt.current_result[perf]:0.2f}',
                                           True, (255, 255, 255))
-            self.screen.blit(textImage, (40, y))   
-            textImage = self.font1.render(f'{perf}: {pt.results[-1][perf]:0.2f}', 
+            self.screen.blit(textImage, (40, y))
+            textImage = self.font1.render(f'{perf}: {pt.results[-1][perf]:0.2f}',
                                           True, (255, 255, 255))
             self.screen.blit(textImage, (500, y))
             y += 42
@@ -133,8 +134,8 @@ class HS_Scan(object):
         self.screen.blit(textImage, (40, 550))
 
         # draw gagues
-        for y in range(len(perfgauges)):
-                gauge = perfgauges[y]
+        for y in range(len(gcfg.perfgauges)):
+                gauge = gcfg.perfgauges[y]
                 try:
                     val = canreader.data[gauge.name][-1][1]
                 except Exception:
@@ -150,7 +151,7 @@ class HS_Scan(object):
     def meatball(self):
         self.screen.fill(self.black)
 
-        pilimage = meatballgauge.drawmeatball(canreader.data['vehicle_stability_lateral_acceleration'][-1][1], 0)
+        pilimage = gcfg.meatballgauge.drawmeatball(canreader.acceltracer.lat, canreader.acceltracer.accel)
 
         raw_str = pilimage.tobytes("raw", 'RGB')
         surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
@@ -158,7 +159,7 @@ class HS_Scan(object):
 
         quads = [(0, 0), (0, 360), (960, 0), (960, 360)]
 
-        for i, gauge in enumerate(meatballguages):
+        for i, gauge in enumerate(gcfg.meatballguages):
             try:
                 val = canreader.data[gauge.name][-1][1]
             except KeyError:
@@ -174,10 +175,10 @@ class HS_Scan(object):
 
 def keyboardworker():
     while isrunning.is_set():
-        try:        
+        try:
             dev = InputDevice('/dev/input/event1')
             for event in dev.read_loop():
-               if event.type == ecodes.EV_KEY:
+                if event.type == ecodes.EV_KEY:
                     events.put(event)
         except Exception:
             logging.info('Waiting for input device')
@@ -226,10 +227,10 @@ if __name__ == '__main__':
                         mode = 1
                         perfscreen = next(perfscreens)
 
-                    if curscreen >= len(screens):
+                    if curscreen >= len(gcfg.screens):
                         curscreen = 0
                     if curscreen < 0:
-                        curscreen = len(screens) - 1
+                        curscreen = len(gcfg.screens) - 1
 
             time.sleep(0.1)
             if mode == 0:
@@ -245,6 +246,6 @@ if __name__ == '__main__':
 
     # Shut down writers.
     for writer in writers:
-        writer.join() 
+        writer.join()
 
     exit(0)

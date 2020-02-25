@@ -64,38 +64,40 @@ class CanReader(Thread):
                         if sig == 'vehicle_stability_lateral_acceleration':
                             self.acceltracer.updatelat(self.data[sig])
 
-
                 except KeyError:
                     pass
                 except Exception:
                     logging.exception(f'Packet decode failed for arbid {message.arbitration_id}')
 
+
 class AccelTracker(object):
     def __init__(self):
         self.accel = 0
-        self.accelminmax = (0, 0)
+        self.accelminmax = [0, 0]
         self.lat = 0
-        self.latminmax = (0, 0)
+        self.latminmax = [0, 0]
 
     def updateaccel(self, speeddata):
         try:
             lastspeed = speeddata[-2]
             curspeed = speeddata[-1]
-            self.accel = (curspeed[1] - lastspeed[1]) * 0.277778 / (curspeed[0] - lastspeed[0])
+            self.accel = (curspeed[1] - lastspeed[1]) * 0.277778 / (curspeed[0] - lastspeed[0]).total_seconds()
             self.setminmax()
 
+        except IndexError:
+            pass
         except Exception:
             logging.exception('Accel calc failed.')
-
 
     def updatelat(self, lateraldata):
         try:
             self.lat = lateraldata[-1][1]
             self.setminmax()
 
+        except IndexError:
+            pass
         except Exception:
-            logging.exception('Lateral accelfailed.')
-
+            logging.exception('Accel calc failed.')
 
     def setminmax(self):
         self.accelminmax[0] = min(self.accelminmax[0], self.accel)
