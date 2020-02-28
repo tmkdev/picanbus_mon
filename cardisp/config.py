@@ -3,6 +3,7 @@
 from collections import namedtuple
 from imagegauge import ImageGauge, ImageGaugeConfig, ImageGaugeStyle
 from imagemeatball import ImageMeatball, ImageMeatballStyle
+from imagegraph import ImageGraph
 
 GaugeDef = namedtuple('GuageDef', ['name', 'gaugeclass'])
 
@@ -299,3 +300,5 @@ meatballguages =  [
                     gaugeconfig=ImageGaugeConfig(displayname="Steering", unit="Deg", altunit=None,
                     min=-2048, max=2048, alertval=None, alertvallow=None, fmtstring='{0:.0f}'))),
 ]
+
+graphgauge = ImageGraph(graphstyle='dark_background')

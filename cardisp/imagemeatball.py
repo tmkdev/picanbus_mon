@@ -15,6 +15,7 @@ class ImageMeatball(object):
     def __init__(self, gaugestyle: ImageMeatballStyle):
         self.style = gaugestyle
         self.fontsmall = ImageFont.truetype(self.style.font, size=32)
+        self.fonttext = ImageFont.truetype(self.style.font, size=24)
 
     def drawmeatball(self, ax, ay):
         balldim = min(self.style.width, self.style.height)
@@ -91,6 +92,9 @@ class ImageMeatball(object):
                   font=self.fontsmall)
 
         return draw
+
+    def drawminmax(self, draw, minmaxx, minmany):
+        raise NotImplementedError  
 
     def scalequads(self, ax, ay):
         minscale = 0.3

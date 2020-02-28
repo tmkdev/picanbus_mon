@@ -101,8 +101,21 @@ class HS_Scan(object):
 
         pygame.display.update()
 
-    def updateGraph(self, kpi):
-        raise NotImplementedError
+    def updategraph(self):
+        self.screen.fill(self.black)
+
+        data = {'platform_brake_position': canreader.data['platform_brake_position'],
+                'throttle_position': canreader.data['throttle_position'],
+                'speed_average_non_driven': canreader.data['speed_average_non_driven'],
+                'steering_wheel_angle': canreader.data['steering_wheel_angle'],
+                }
+
+        pilimage = gcfg.graphgauge.drawgraph(data)
+        raw_str = pilimage.tobytes("raw", 'RGBA')
+        surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGBA')
+        self.screen.blit(surface, (0, 0))
+
+        pygame.display.update()
 
     def perfscreen(self):
         self.screen.fill(self.black)
@@ -133,7 +146,7 @@ class HS_Scan(object):
         textImage = self.font2.render(f"{pt.PERFSTATES[pt.state]}", True, (255, 255, 255))
         self.screen.blit(textImage, (40, 550))
 
-        # draw gagues
+        # draw gauges
         for y in range(len(gcfg.perfgauges)):
                 gauge = gcfg.perfgauges[y]
                 try:
@@ -190,7 +203,7 @@ if __name__ == '__main__':
     scanner = HS_Scan()
     canreader.start()
 
-    perfscreens = itertools.cycle([scanner.perfscreen, scanner.meatball])
+    perfscreens = itertools.cycle([scanner.perfscreen, scanner.meatball, scanner.updategraph])
     perfscreen = next(perfscreens)
     curscreen = 0
     mode = 0
