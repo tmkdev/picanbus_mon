@@ -14,11 +14,13 @@ from canreader import CanReader
 import canwriter
 from evdev import InputDevice, ecodes
 
+canbus = os.getenv('CANBUS', 'vcan0')
+
 events = Queue()
 
 isrunning = Event()
 isrunning.set()
-canreader = CanReader(canbus='vcan0', dbc=['canbus_dbc/gm_global_a_hs.dbc',
+canreader = CanReader(canbus=canbus, dbc=['canbus_dbc/gm_global_a_hs.dbc',
                                            'canbus_dbc/m22_obd.dbc'],
                       isrunning=isrunning)
 
@@ -212,7 +214,7 @@ if __name__ == '__main__':
     logging.warning('Starting OBD senders')
     writers = []
     for pid in canwriter.sendpids:
-        writer = canwriter.CanWriter(canbus='vcan0', pid=pid, isrunning=isrunning)
+        writer = canwriter.CanWriter(canbus=canbus, pid=pid, isrunning=isrunning)
         writer.start()
         writers.append(writer)
 
