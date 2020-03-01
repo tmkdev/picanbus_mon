@@ -232,7 +232,6 @@ if __name__ == '__main__':
             if not events.empty():
                 event = events.get_nowait()
                 logging.warning(event)
-                print(event.code)
                 if event.type == 1 and event.value == 1:
                     if event.code == 115:
                         curscreen += 1
