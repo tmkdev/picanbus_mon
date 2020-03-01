@@ -93,7 +93,7 @@ class HS_Scan(object):
                 gauge = gcfg.screens[curscreen][i]
 
                 try:
-                    val = canreader.data[gauge.name][-1][1]
+                    val = canreader.currentdata[gauge.name][-1][1]
                 except IndexError:
                     val = None
                 except Exception:
@@ -155,7 +155,7 @@ class HS_Scan(object):
         for y in range(len(gcfg.perfgauges)):
                 gauge = gcfg.perfgauges[y]
                 try:
-                    val = canreader.data[gauge.name][-1][1]
+                    val = canreader.currentdata[gauge.name][-1][1]
                 except Exception:
                     val = None
 
@@ -179,7 +179,7 @@ class HS_Scan(object):
 
         for i, gauge in enumerate(gcfg.meatballguages):
             try:
-                val = canreader.data[gauge.name][-1][1]
+                val = canreader.currentdata[gauge.name][-1][1]
             except KeyError:
                 val = None
 
