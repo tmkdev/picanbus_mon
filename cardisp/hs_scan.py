@@ -14,14 +14,17 @@ from canreader import CanReader
 import canwriter
 from evdev import InputDevice, ecodes
 
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 canbus = os.getenv('CANBUS', 'vcan0')
+logging.warning(f'Running on CANBUS {canbus}')
 
 events = Queue()
 
 isrunning = Event()
 isrunning.set()
 canreader = CanReader(canbus=canbus, dbc=['canbus_dbc/gm_global_a_hs.dbc',
-                                           'canbus_dbc/m22_obd.dbc'],
+                                          'canbus_dbc/m22_obd.dbc'],
                       isrunning=isrunning)
 
 
