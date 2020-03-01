@@ -1,4 +1,7 @@
 #!/bin/bash
+# Run from root cron or rc.local
+# Framebuffer access needs root. 
+
 cd /home/pi/picanbus_mon
 
 if [ -f "/home/pi/RUNDISP" ]; then 
