@@ -109,10 +109,10 @@ class HS_Scan(object):
     def updategraph(self):
         self.screen.fill(self.black)
 
-        data = {'platform_brake_position': canreader.data['platform_brake_position'],
-                'throttle_position': canreader.data['throttle_position'],
-                'speed_average_non_driven': canreader.data['speed_average_non_driven'],
-                'steering_wheel_angle': canreader.data['steering_wheel_angle'],
+        data = {'Brake': canreader.data['platform_brake_position'],
+                'TPS': canreader.data['throttle_position'],
+                'Speed': canreader.data['speed_average_non_driven'],
+                'Steer': canreader.data['steering_wheel_angle'],
                 }
 
         pilimage = gcfg.graphgauge.drawgraph(data)
@@ -195,12 +195,14 @@ def keyboardworker():
     while isrunning.is_set():
         try:
             dev = InputDevice('/dev/input/event1')
+            dev.grab()
             for event in dev.read_loop():
                 if event.type == ecodes.EV_KEY:
                     events.put(event)
         except Exception:
             logging.info('Waiting for input device')
             time.sleep(1)
+    dev.ungrab()
 
 
 if __name__ == '__main__':
