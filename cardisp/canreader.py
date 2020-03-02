@@ -14,9 +14,18 @@ CanSignal = namedtuple('CanSignal',
 
 
 class CanReader(Thread):
+    """Read CANBUS data and store/process it for downstream display
+
+    signals - dictionary of CanSignal objects read from the passed in DBCs
+    data - 100ms, 2 minute dict of deques for trending/graphing.
+    currentdata - dict of deque(2) for current and last sample. 
+    perftracker - performance data 
+    acceltracker - acceleration data
+    """
+    
     def __init__(self, group=None, target=None, name=None,
                  canbus='vcan0', bustype='socketcan',
-                 dbc=[], maxlen=200, isrunning=Event()):
+                 dbc=[], maxlen=1200, isrunning=Event()):
         super(CanReader, self).__init__(group=group, target=target,
                                         name=name)
 
@@ -27,6 +36,7 @@ class CanReader(Thread):
             logging.warning(f'Loading {dbcfile} into reader database.')
             self.db.add_dbc_file(dbcfile)
         self.data = {}
+        self.currentdata = {}
         self.cansignals = {}
 
         self.running = isrunning
@@ -43,9 +53,21 @@ class CanReader(Thread):
 
         for sig in self.cansignals:
             self.data[sig] = deque(maxlen=maxlen)
+            self.currentdata[sig] = deque(maxlen=2)
 
         self.perftracker = PerfTracker()
         self.acceltracer = AccelTracker()
+
+    def _updatedata(self, sig, datapoint):
+        try:
+            sampletimedelta = datapoint[0] - self.data[sig][-1][0]
+
+            if sampletimedelta / datetime.timedelta(milliseconds=1) > 100:
+                self.data[sig].append(datapoint)
+
+        except IndexError:
+            self.data[sig].append(datapoint)
+
 
     def run(self):
         while self.running.is_set():
@@ -55,14 +77,16 @@ class CanReader(Thread):
                     newdata = self.db.decode_message(message.arbitration_id, message.data)
 
                     for sig in newdata:
-                        self.data[sig].append((datetime.datetime.now(), newdata[sig]))
+                        datapoint = (datetime.datetime.now(), newdata[sig])
+                        self.currentdata[sig].append(datapoint)
+                        self._updatedata(sig, datapoint)
 
                         if sig == 'speed_average_non_driven':
-                            self.perftracker.tick(self.data[sig])
-                            self.acceltracer.updateaccel(self.data[sig])
+                            self.perftracker.tick(self.currentdata[sig])
+                            self.acceltracer.updateaccel(self.currentdata[sig])
 
                         if sig == 'vehicle_stability_lateral_acceleration':
-                            self.acceltracer.updatelat(self.data[sig])
+                            self.acceltracer.updatelat(self.currentdata[sig])
 
                 except KeyError:
                     pass
