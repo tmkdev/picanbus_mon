@@ -264,7 +264,7 @@ if __name__ == '__main__':
                             gaugescreen = gaugescreens[0]
                         if mode == 1:
                             perfscreens.rotate(1)
-                            gaugescreen = perfscreens[0]
+                            perfscreen = perfscreens[0]
                         if mode == 2:
                             graphs.rotate(1)
                             graph = graphs[0]
@@ -274,7 +274,7 @@ if __name__ == '__main__':
                             gaugescreen = gaugescreens[0]
                         if mode == 1:
                             perfscreens.rotate(-1)
-                            gaugescreen = perfscreens[0]
+                            perfscreen = perfscreens[0]
                         if mode == 2:
                             graphs.rotate(-1)
                             graph = graphs[0]
