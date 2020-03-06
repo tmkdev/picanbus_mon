@@ -304,3 +304,26 @@ meatballguages =  [
 ]
 
 graphgauge = ImageGraph(graphstyle='dark_background')
+
+graphs = [
+    # Drive perf
+    {
+        'Brake%': 'platform_brake_position',
+        'Throt%': 'accelerator_actual_position',
+        'Speed': 'speed_average_non_driven',
+        'Steer': 'steering_wheel_angle',
+    },
+    # TRIMS
+    {
+        'STFT1': 'O_ShortFuelTrimBank1',
+        'SHFT2': 'O_ShortFuelTrimBank1',
+        'LTFT1': 'O_LongFuelTrimBank1',
+        'LTFT2': 'O_LongFuelTrimBank2'
+    },
+    # Supercharger Perf
+    {
+        'IAT': 'engine_intake_temperature',
+        'IAT2': 'OE_IntakeAirTemp2',
+        'Boost%': 'boost_pressure_indication'
+    }
+]

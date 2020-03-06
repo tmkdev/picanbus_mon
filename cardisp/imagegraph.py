@@ -21,7 +21,7 @@ class ImageGraph(object):
             x, y = zip(*data)
             x = [(xp-x[-1]).total_seconds() for xp in x]
         except Exception:
-            logging.warning('Data formatting failed')
+            logging.info('Data formatting failed')
 
         return x, y
 
@@ -36,10 +36,11 @@ class ImageGraph(object):
 
             for kpi in kpis:
                 x, y = self.formatdata(kpis[kpi])
-
                 ax.plot(x, y)
                 ax.set_xlabel('Rel Time(s)')
                 ax.grid(color='#333333')
+                ax.set_xlim([-120, 0])
+
             fig.legend(kpis.keys(), loc='upper left', ncol=4, mode="expand")
 
             im = self._fig2img(fig)

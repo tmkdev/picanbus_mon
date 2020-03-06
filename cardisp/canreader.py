@@ -18,11 +18,11 @@ class CanReader(Thread):
 
     signals - dictionary of CanSignal objects read from the passed in DBCs
     data - 100ms, 2 minute dict of deques for trending/graphing.
-    currentdata - dict of deque(2) for current and last sample. 
-    perftracker - performance data 
+    currentdata - dict of deque(2) for current and last sample.
+    perftracker - performance data
     acceltracker - acceleration data
     """
-    
+
     def __init__(self, group=None, target=None, name=None,
                  canbus='vcan0', bustype='socketcan',
                  dbc=[], maxlen=1200, isrunning=Event()):
@@ -67,7 +67,6 @@ class CanReader(Thread):
 
         except IndexError:
             self.data[sig].append(datapoint)
-
 
     def run(self):
         while self.running.is_set():

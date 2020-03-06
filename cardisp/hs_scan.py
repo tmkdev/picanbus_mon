@@ -5,7 +5,7 @@ import pygame
 import time
 import random
 import logging
-import itertools
+from collections import deque
 from threading import Thread, Event
 from queue import Queue
 
@@ -13,6 +13,7 @@ import config as gcfg
 from canreader import CanReader
 import canwriter
 from evdev import InputDevice, ecodes
+import gpiozero
 
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -69,6 +70,7 @@ class HS_Scan(object):
         pygame.font.init()
         self.font1 = pygame.font.Font(gcfg.g_font, 40)
         self.font2 = pygame.font.Font(gcfg.g_font, 96)
+        self.font3 = pygame.font.Font(gcfg.g_font, 16)
 
         self.displayimage(gcfg.g_bootimage)
 
@@ -90,7 +92,7 @@ class HS_Scan(object):
         for x in range(4):
             for y in range(2):
                 i = x + (4*y)
-                gauge = gcfg.screens[curscreen][i]
+                gauge = curscreen[i]
 
                 try:
                     val = canreader.currentdata[gauge.name][-1][1]
@@ -106,16 +108,18 @@ class HS_Scan(object):
 
         pygame.display.update()
 
-    def updategraph(self):
+    def assemblegraphdata(self, graphdata):
+        kpis = {}
+        for kpi in graphdata:
+            kpis[kpi] = canreader.data[graphdata[kpi]]
+
+        return kpis
+
+    def updategraph(self, graphdata):
         self.screen.fill(self.black)
+        kpis = self.assemblegraphdata(graphdata)
 
-        data = {'Brake': canreader.data['platform_brake_position'],
-                'TPS': canreader.data['throttle_position'],
-                'Speed': canreader.data['speed_average_non_driven'],
-                'Steer': canreader.data['steering_wheel_angle'],
-                }
-
-        pilimage = gcfg.graphgauge.drawgraph(data)
+        pilimage = gcfg.graphgauge.drawgraph(kpis)
         raw_str = pilimage.tobytes("raw", 'RGBA')
         surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGBA')
         self.screen.blit(surface, (0, 0))
@@ -190,6 +194,18 @@ class HS_Scan(object):
 
         pygame.display.update()
 
+    def drawheader(self):
+        cpu = gpiozero.CPUTemperature()
+        loadaverage = gpiozero.LoadAverage(minutes=1)
+        nowstring = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cputempstring = f'CPU Temp: {cpu.temperature}C'
+        loadavgstring = f'CPU Load: {loadaverage.load_average}'
+
+        textImage = self.font3.render(f'Current', True, (255, 255, 255))
+        self.screen.blit(textImage, (0, 0))
+
+        pygame.display.update()
+
 
 def keyboardworker():
     while isrunning.is_set():
@@ -210,10 +226,17 @@ if __name__ == '__main__':
     scanner = HS_Scan()
     canreader.start()
 
-    perfscreens = itertools.cycle([scanner.perfscreen, scanner.meatball, scanner.updategraph])
-    perfscreen = next(perfscreens)
-    curscreen = 0
-    mode = 0
+    perfscreens = deque([scanner.perfscreen, scanner.meatball])
+    perfscreen = perfscreens[0]
+
+    gaugescreens = deque(gcfg.screens)
+    gaugescreen = gaugescreens[0]
+
+    graphs = deque(gcfg.graphs)
+    graph = graphs[0]
+
+    modes = deque([0, 1, 2])
+    mode = modes[0]
 
     # Start can senders
     logging.warning('Starting OBD senders')
@@ -236,26 +259,38 @@ if __name__ == '__main__':
                 logging.warning(event)
                 if event.type == 1 and event.value == 1:
                     if event.code == 115:
-                        curscreen += 1
-                        mode = 0
+                        if mode == 0:
+                            gaugescreens.rotate(1)
+                            gaugescreen = gaugescreens[0]
+                        if mode == 1:
+                            perfscreens.rotate(1)
+                            gaugescreen = perfscreens[0]
+                        if mode == 2:
+                            graphs.rotate(1)
+                            graph = graphs[0]
                     if event.code == 114:
-                        curscreen -= 1
-                        mode = 0
+                        if mode == 0:
+                            gaugescreens.rotate(-1)
+                            gaugescreen = gaugescreens[0]
+                        if mode == 1:
+                            perfscreens.rotate(-1)
+                            gaugescreen = perfscreens[0]
+                        if mode == 2:
+                            graphs.rotate(-1)
+                            graph = graphs[0]
 
-                    if event.code in [165, 163]:
-                        mode = 1
-                        perfscreen = next(perfscreens)
-
-                    if curscreen >= len(gcfg.screens):
-                        curscreen = 0
-                    if curscreen < 0:
-                        curscreen = len(gcfg.screens) - 1
+                    if event.code == 164:
+                        modes.rotate(1)
+                        mode = modes[0]
 
             time.sleep(0.1)
             if mode == 0:
-                scanner.updateKPIs(curscreen)
+                scanner.updateKPIs(gaugescreen)
             elif mode == 1:
                 perfscreen()
+            elif mode == 2:
+                scanner.updategraph(graph)
+
         except KeyboardInterrupt:
             isrunning.clear()
             break
