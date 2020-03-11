@@ -5,6 +5,7 @@ import pygame
 import time
 import random
 import logging
+import datetime
 from collections import deque
 from threading import Thread, Event
 from queue import Queue
@@ -70,7 +71,7 @@ class HS_Scan(object):
         pygame.font.init()
         self.font1 = pygame.font.Font(gcfg.g_font, 40)
         self.font2 = pygame.font.Font(gcfg.g_font, 96)
-        self.font3 = pygame.font.Font(gcfg.g_font, 16)
+        self.font3 = pygame.font.Font(gcfg.g_font, 20)
 
         self.displayimage(gcfg.g_bootimage)
 
@@ -106,7 +107,9 @@ class HS_Scan(object):
                 surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
                 self.screen.blit(surface, (x*320, y*360))
 
-        pygame.display.update()
+        #pygame.display.update()
+
+        self.drawheader()
 
     def assemblegraphdata(self, graphdata):
         kpis = {}
@@ -170,6 +173,8 @@ class HS_Scan(object):
 
         pygame.display.update()
 
+
+
     def meatball(self):
         self.screen.fill(self.black)
 
@@ -201,8 +206,14 @@ class HS_Scan(object):
         cputempstring = f'CPU Temp: {cpu.temperature}C'
         loadavgstring = f'CPU Load: {loadaverage.load_average}'
 
-        textImage = self.font3.render(f'Current', True, (255, 255, 255))
+        textImage = self.font3.render(nowstring, True, (255, 255, 255))
         self.screen.blit(textImage, (0, 0))
+
+        textImage = self.font3.render(cputempstring, True, (255, 255, 255))
+        self.screen.blit(textImage, (500, 0))
+
+        textImage = self.font3.render(loadavgstring, True, (255, 255, 255))
+        self.screen.blit(textImage, (1100, 0))
 
         pygame.display.update()
 

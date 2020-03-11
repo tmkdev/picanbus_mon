@@ -325,5 +325,10 @@ graphs = [
         'IAT': 'engine_intake_temperature',
         'IAT2': 'OE_IntakeAirTemp2',
         'Boost%': 'boost_pressure_indication'
+    },
+    # Timing
+    {
+        'Timing': 'O_TimingAdvance',
+        'KnockRetard': 'OE_KnockRetard'
     }
 ]
