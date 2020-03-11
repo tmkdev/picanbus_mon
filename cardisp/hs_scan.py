@@ -217,6 +217,10 @@ class HS_Scan(object):
 
         pygame.display.update()
 
+    def screenshot(self):
+        tstamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        filename = f'screenshot_{tstamp}.jpg'
+        pygame.image.save(pygame.screen, filename)
 
 def keyboardworker():
     while isrunning.is_set():
@@ -293,6 +297,10 @@ if __name__ == '__main__':
                     if event.code == 164:
                         modes.rotate(1)
                         mode = modes[0]
+
+                    if event.code == 165:
+                        scanner.screenshot()
+
 
             time.sleep(0.1)
             if mode == 0:
