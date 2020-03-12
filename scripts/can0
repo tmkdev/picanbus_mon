@@ -1,0 +1,6 @@
+auto can0
+iface can0 inet manual
+        pre-up ip link set $IFACE type can bitrate 500000 
+        up /sbin/ifconfig $IFACE up
+        post-up /sbin/ifconfig $IFACE txqueuelen 1000
+        down /sbin/ifconfig $IFACE down
