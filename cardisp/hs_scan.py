@@ -31,10 +31,6 @@ canreader = CanReader(canbus=canbus, dbc=gcfg.dbcfiles,
 
 class HS_Scan(object):
     screen = None
-    fontcolor = (0, 255, 0)
-    white = (255, 255, 255)
-    black = (0, 0, 0)
-    red = (255, 0, 0)
 
     def __init__(self):
         "Ininitializes a new pygame screen using the framebuffer"
@@ -79,7 +75,7 @@ class HS_Scan(object):
         pass
 
     def displayimage(self, imagename):
-        self.screen.fill(self.black)
+        self.screen.fill(gcfg.g_black)
         startuplogo = pygame.image.load(imagename)
         startuplogo = pygame.transform.scale(startuplogo, (1280, 720))
         self.screen.blit(startuplogo, (0, 0))
@@ -87,7 +83,7 @@ class HS_Scan(object):
         pygame.display.update()
 
     def updateKPIs(self, curscreen):
-        self.screen.fill(self.black)
+        self.screen.fill(gcfg.g_black)
 
         for x in range(4):
             for y in range(2):
@@ -116,7 +112,7 @@ class HS_Scan(object):
         return kpis
 
     def updategraph(self, graphdata):
-        self.screen.fill(self.black)
+        self.screen.fill(gcfg.g_black)
         kpis = self.assemblegraphdata(graphdata)
 
         pilimage = gcfg.graphgauge.drawgraph(kpis)
@@ -127,32 +123,32 @@ class HS_Scan(object):
         pygame.display.update()
 
     def perfscreen(self):
-        self.screen.fill(self.black)
+        self.screen.fill(gcfg.g_black)
         pt = canreader.perftracker
 
-        textImage = self.font1.render(f'Current', True, (255, 255, 255))
+        textImage = self.font1.render(f'Current', True, gcfg.g_white)
         self.screen.blit(textImage, (40, 0))
 
-        textImage = self.font1.render(f'Last', True, (255, 255, 255))
+        textImage = self.font1.render(f'Last', True, gcfg.g_white)
         self.screen.blit(textImage, (500, 0))
 
         y = 42
         for perf in pt.current_result:
             textImage = self.font1.render(f'{perf}: {pt.current_result[perf]:0.2f}',
-                                          True, (255, 255, 255))
+                                          True, gcfg.g_white)
             self.screen.blit(textImage, (40, y))
             textImage = self.font1.render(f'{perf}: {pt.results[-1][perf]:0.2f}',
-                                          True, (255, 255, 255))
+                                          True, gcfg.g_white)
             self.screen.blit(textImage, (500, y))
             y += 42
 
-        textImage = self.font2.render(f"ET: {pt.curr_et:0.2f}s", True, (255, 255, 255))
+        textImage = self.font2.render(f"ET: {pt.curr_et:0.2f}s", True, gcfg.g_white)
         self.screen.blit(textImage, (40, 350))
 
-        textImage = self.font2.render(f"Dist: {pt.distance:0.4f}mi", True, (255, 255, 255))
+        textImage = self.font2.render(f"Dist: {pt.distance:0.4f}mi", True, gcfg.g_white)
         self.screen.blit(textImage, (40, 450))
 
-        textImage = self.font2.render(f"{pt.PERFSTATES[pt.state]}", True, (255, 255, 255))
+        textImage = self.font2.render(f"{pt.PERFSTATES[pt.state]}", True, gcfg.g_white)
         self.screen.blit(textImage, (40, 550))
 
         # draw gauges
@@ -170,9 +166,8 @@ class HS_Scan(object):
 
         pygame.display.update()
 
-
     def meatball(self):
-        self.screen.fill(self.black)
+        self.screen.fill(gcfg.g_black)
 
         pilimage = gcfg.meatballgauge.drawmeatball(canreader.acceltracer.lat, canreader.acceltracer.accel)
 
@@ -202,14 +197,14 @@ class HS_Scan(object):
         cputempstring = f'CPU Temp: {cpu.temperature:0.0f}C'
         loadavgstring = f'CPU Load: {loadaverage.load_average:0.2f}'
 
-        textImage = self.font3.render(nowstring, True, (255, 255, 255))
+        textImage = self.font3.render(nowstring, True, gcfg.g_white)
         self.screen.blit(textImage, (0, 0))
 
-        textImage = self.font3.render(cputempstring, True, (255, 255, 255))
+        textImage = self.font3.render(cputempstring, True, gcfg.g_white)
         self.screen.blit(textImage, (500, 0))
 
-        textImage = self.font3.render(loadavgstring, True, (255, 255, 255))
-        self.screen.blit(textImage, (1100, 0))
+        textImage = self.font3.render(loadavgstring, True, gcfg.g_white)
+        self.screen.blit(textImage, (1125, 0))
 
         pygame.display.update()
 

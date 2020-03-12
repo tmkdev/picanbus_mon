@@ -12,8 +12,8 @@ g_red = (255, 0, 0)
 g_blue = (0, 0, 255)
 g_cyan = (0, 255, 255)
 g_white = (255, 255, 255)
-g_grey = "#222222"
-g_alert = "#f0b01d"
+g_grey = (0x22, 0x22, 0x22)
+g_alert = (0xf0, 0xb0, 0x1d)
 g_black = (0, 0, 0)
 
 # files and paths
