@@ -7,16 +7,24 @@ from imagegraph import ImageGraph
 
 GaugeDef = namedtuple('GuageDef', ['name', 'gaugeclass'])
 
-g_red = "#FF0000"
-g_blue = "#0000FF"
-g_cyan = "#00FFFF"
-g_white = "#FFFFFF"
+# Colors
+g_red = (255, 0, 0)
+g_blue = (0, 0, 255)
+g_cyan = (0, 255, 255)
+g_white = (255, 0, 0)
 g_grey = "#222222"
 g_alert = "#f0b01d"
-g_black = "#000000"
+g_black = (0, 0, 0)
+
+# files and paths
+dbcfiles = ['canbus_dbc/gm_global_a_hs.dbc',
+            'canbus_dbc/m22_obd.dbc']
+screenshotpath = ''
 g_font = 'fonts/segoeui.ttf'
 g_bootimage = "cardisp/images/v-black.jpg"
 
+
+# Base Guage Classes
 base_red = ImageGaugeStyle(width=320, height=360, bgcolor=g_black, alertcolor=g_alert,
                            barcolor=g_red, barbgcolor=g_grey, sweepstart=140, sweepend=400,
                            font=g_font, sweepthick=25, gutter=20, outline=3,
@@ -47,7 +55,7 @@ textgauge = ImageGaugeStyle(width=320, height=360, bgcolor=g_black, alertcolor=g
                             font=g_font, sweepthick=25, gutter=20, outline=3,
                             outlinecolor=g_white, sweeptype=ImageGauge.TEXT, textcolor=g_white)
 
-
+# Perf Gauge Screens
 screens = [
     # Driving Parms
     [

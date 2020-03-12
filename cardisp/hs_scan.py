@@ -25,8 +25,7 @@ events = Queue()
 
 isrunning = Event()
 isrunning.set()
-canreader = CanReader(canbus=canbus, dbc=['canbus_dbc/gm_global_a_hs.dbc',
-                                          'canbus_dbc/m22_obd.dbc'],
+canreader = CanReader(canbus=canbus, dbc=gcfg.dbcfiles,
                       isrunning=isrunning)
 
 
