@@ -107,8 +107,6 @@ class HS_Scan(object):
                 surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
                 self.screen.blit(surface, (x*320, y*360))
 
-        #pygame.display.update()
-
         self.drawheader()
 
     def assemblegraphdata(self, graphdata):
@@ -174,7 +172,6 @@ class HS_Scan(object):
         pygame.display.update()
 
 
-
     def meatball(self):
         self.screen.fill(self.black)
 
@@ -203,8 +200,8 @@ class HS_Scan(object):
         cpu = gpiozero.CPUTemperature()
         loadaverage = gpiozero.LoadAverage(minutes=1)
         nowstring = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        cputempstring = f'CPU Temp: {cpu.temperature}C'
-        loadavgstring = f'CPU Load: {loadaverage.load_average}'
+        cputempstring = f'CPU Temp: {cpu.temperature:0.0f}C'
+        loadavgstring = f'CPU Load: {loadaverage.load_average:0.2f}'
 
         textImage = self.font3.render(nowstring, True, (255, 255, 255))
         self.screen.blit(textImage, (0, 0))
@@ -220,7 +217,8 @@ class HS_Scan(object):
     def screenshot(self):
         tstamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         filename = f'screenshot_{tstamp}.jpg'
-        pygame.image.save(pygame.screen, filename)
+        pygame.image.save(self.screen, filename)
+
 
 def keyboardworker():
     while isrunning.is_set():
@@ -300,7 +298,6 @@ if __name__ == '__main__':
 
                     if event.code == 165:
                         scanner.screenshot()
-
 
             time.sleep(0.1)
             if mode == 0:
