@@ -38,9 +38,7 @@ if [ "$vcanset" -eq 0 ];
 then
     echo "Already configured"
 else
-    sudo -i 
-    echo "vcan" >> /etc/modules
-    exit
+    sudo echo "vcan" > /etc/modules
 fi
 
 echo "Configuring can interfaces"
