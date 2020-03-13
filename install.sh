@@ -1,11 +1,10 @@
 #!/bin/bash
-
-cd $HOME
-
 if [ "$USER" != "pi" ]; then
     echo "This script is intended to install to user pi. $USER is not supported."
     exit 2
 fi
+
+cd $HOME
 
 echo "This script will attempt to install picanbus_mon on your pi. It might actually work."
 echo "It does envoke sudo - so I'll wait for 10 secs to make sure your OK with that..."
@@ -62,7 +61,6 @@ sudo sed -i -r 's/^#?dtparam=i2c_arm.*$/dtparam=i2c_arm=on/' /boot/config.txt
 grep -Fxq "sdtv_aspect=3" /boot/config.txt || sudo echo "sdtv_aspect=3" >> /boot/config.txt
 grep -Fxq "dtoverlay=i2c-rtc" /boot/config.txt || sudo echo "dtoverlay=i2c-rtc,ds3231" >> /boot/config.txt
 
-
 if [ ! -f "/boot/cmdline.txt.orig" ]; then
     echo "Backing up cmdline.txt.. "
     sudo cp /boot/cmdline.txt /boot/cmdline.txt.orig
@@ -91,7 +89,8 @@ touch /home/pi/RUNDISP
 
 echo "Getting opensource font sekawk for segoeui"
 mkdir fonts
-wget https://github.com/winjs/winstrap/blob/5a3c1341190e7585fd550e01cfded50ae4e8a4c7/src/fonts/selawk.ttf?raw=true -O fonts/segoeui.ttf
+wget https://github.com/winjs/winstrap/blob/5a3c1341190e7585fd550e01cfded50ae4e8a4c7/src/fonts/selawk.ttf?raw=true -O fonts/selawk.ttf
+ln -s fonts/selawk.ttf fonts/segoeui.ttf
 
 echo "Done?! Rebooting in 10 seconds"
 sleep 10
