@@ -53,7 +53,15 @@ if [ ! -f "/boot/config.txt.orig" ]; then
     echo "Backing up config.txt.. "
     sudo cp /boot/config.txt /boot/config.txt.orig
 fi 
-sudo cp scripts/config.txt /boot/config.txt
+
+echo "Configuring config.txt"
+sudo sed -i -r 's/^#?disable_overscan.*$/disable_overscan=1/' /boot/config.txt
+sudo sed -i -r 's/^#?framebuffer_width.*$/framebuffer_width=1280/' /boot/config.txt
+sudo sed -i -r 's/^#?framebuffer_height.*$/framebuffer_height=720/' /boot/config.txt
+sudo sed -i -r 's/^#?dtparam=i2c_arm.*$/dtparam=i2c_arm=on/' /boot/config.txt
+grep -Fxq "sdtv_aspect=3" /boot/config.txt || sudo echo "sdtv_aspect=3" >> /boot/config.txt
+grep -Fxq "dtoverlay=i2c-rtc" /boot/config.txt || sudo echo "dtoverlay=i2c-rtc,ds3231" >> /boot/config.txt
+
 
 if [ ! -f "/boot/cmdline.txt.orig" ]; then
     echo "Backing up cmdline.txt.. "
