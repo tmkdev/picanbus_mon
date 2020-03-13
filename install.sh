@@ -82,6 +82,7 @@ echo "Setting RUNFLAG /home/pi/RUNDISP. If this file exists the pi boots into th
 touch /home/pi/RUNDISP
 
 echo "Getting opensource font sekawk for segoeui"
+mkdir fonts
 wget https://github.com/winjs/winstrap/blob/5a3c1341190e7585fd550e01cfded50ae4e8a4c7/src/fonts/selawk.ttf?raw=true -O fonts/segoeui.ttf
 
 echo "Done?! Rebooting in 10 seconds"
