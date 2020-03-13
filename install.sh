@@ -18,6 +18,7 @@ sudo apt-get upgrade -y
 echo "Installing git"
 sudo apt-get install -y git 
 
+echo "Cloning picanbus_mon"
 git clone --recurse-submodules https://github.com/tmkdev/picanbus_mon.git
 
 echo "Install packages from picanbus_mon.doc"
@@ -47,8 +48,10 @@ if [ ! -f "/boot/config.txt.orig" ]; then
 fi 
 sudo cp scripts/config.txt /boot/config.txt
 
-# /boot/cmdline.txt needs 
-# logo.nologo and consoleblank=0 loglevel=1 quiet appeneded.
+if [ ! -f "/boot/cmdline.txt.orig" ]; then
+    echo "Backing up cmdline.txt.. "
+    sudo cp /boot/cmdline.txt /boot/cmdline.txt.orig
+fi 
 
 echo "Configuring /boot/cmdline.txt"
 if grep -Fxq "logo.nologo consoleblank=0 loglevel=1 quiet" /boot/cmdline.txt
