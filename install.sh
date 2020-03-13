@@ -81,6 +81,9 @@ sudo crontab scripts/root_boot_crontab
 echo "Setting RUNFLAG /home/pi/RUNDISP. If this file exists the pi boots into the display automatically. Delete if that's not what you want."
 touch /home/pi/RUNDISP
 
+echo "Getting opensource font sekawk for segoeui"
+wget https://github.com/winjs/winstrap/blob/5a3c1341190e7585fd550e01cfded50ae4e8a4c7/src/fonts/selawk.ttf?raw=true -O fonts/segoeui.ttf
+
 echo "Done?! Rebooting in 10 seconds"
 sleep 10
 
