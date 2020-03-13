@@ -10,18 +10,27 @@ GaugeDef = namedtuple('GuageDef', ['name', 'gaugeclass'])
 # Colors
 g_red = (255, 0, 0)
 g_blue = (0, 0, 255)
+g_green = (0, 255, 0)
+g_yellow = (255, 255, 0)
 g_cyan = (0, 255, 255)
 g_white = (255, 255, 255)
 g_grey = (0x22, 0x22, 0x22)
 g_alert = (0xf0, 0xb0, 0x1d)
 g_black = (0, 0, 0)
+g_grey50 = (128, 128, 128) 
 
 # files and paths
 dbcfiles = ['canbus_dbc/gm_global_a_hs.dbc',
             'canbus_dbc/m22_obd.dbc']
-screenshotpath = ''
+screenshotpath = '/home/pi/logs/screenshots'
 g_font = 'fonts/segoeui.ttf'
 g_bootimage = "cardisp/images/v-black.jpg"
+
+# evdev key events (Cheap round ble media controller - mine enumerates as BT003)
+g_modechange = 164
+g_screenup = 115
+g_screendown = 114
+g_screenshot = 165
 
 
 # Base Guage Classes
@@ -283,14 +292,14 @@ perfgauges = [
 
 meatballgauge = ImageMeatball(ImageMeatballStyle(width=640,
                                                 height=720,
-                                                bgcolor=(0, 0, 0),
-                                                fgcolor=(255, 255, 255),
-                                                textcolor=(255, 255, 255),
-                                                accelquadcolor=(0, 255, 0),
-                                                decelquadcolor=(255, 0, 0),
-                                                latquadcolor=(255, 255, 0),
-                                                gridcolor=(128, 128, 128),
-                                                font='fonts/segoeui.ttf'))
+                                                bgcolor=g_black,
+                                                fgcolor=g_white,
+                                                textcolor=g_white,
+                                                accelquadcolor=g_green,
+                                                decelquadcolor=g_red,
+                                                latquadcolor=g_yellow,
+                                                gridcolor=g_grey50,
+                                                font=g_font))
 
 meatballguages =  [
         GaugeDef(name='accelerator_actual_position',

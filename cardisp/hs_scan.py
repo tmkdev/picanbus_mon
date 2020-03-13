@@ -210,7 +210,7 @@ class HS_Scan(object):
 
     def screenshot(self):
         tstamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        filename = f'screenshot_{tstamp}.jpg'
+        filename = f'{gcfg.screenshotpath}/screenshot_{tstamp}.jpg'
         pygame.image.save(self.screen, filename)
 
 
@@ -265,7 +265,7 @@ if __name__ == '__main__':
                 event = events.get_nowait()
                 logging.warning(event)
                 if event.type == 1 and event.value == 1:
-                    if event.code == 115:
+                    if event.code == gcfg.g_screenup:
                         if mode == 0:
                             gaugescreens.rotate(1)
                             gaugescreen = gaugescreens[0]
@@ -275,7 +275,7 @@ if __name__ == '__main__':
                         if mode == 2:
                             graphs.rotate(1)
                             graph = graphs[0]
-                    if event.code == 114:
+                    if event.code == gcfg.g_screendown:
                         if mode == 0:
                             gaugescreens.rotate(-1)
                             gaugescreen = gaugescreens[0]
@@ -286,11 +286,11 @@ if __name__ == '__main__':
                             graphs.rotate(-1)
                             graph = graphs[0]
 
-                    if event.code == 164:
+                    if event.code == gcfg.g_modechange:
                         modes.rotate(1)
                         mode = modes[0]
 
-                    if event.code == 165:
+                    if event.code == gcfg.g_screenshot:
                         scanner.screenshot()
 
             time.sleep(0.1)
