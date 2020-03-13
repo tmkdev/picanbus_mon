@@ -31,11 +31,16 @@ echo "Installing cantools from pypi"
 sudo pip3 install cantools
 
 echo "Configuring vcan module"
-if grep -Fxq "vcan" /etc/modules
+grep -Fxq "vcan" /etc/modules
+vcanset=$?
+
+if [ "$vcanset" -eq 0 ]; 
 then
     echo "Already configured"
 else
-    sudo echo "vcan" >> /etc/modules
+    sudo -i 
+    echo "vcan" >> /etc/modules
+    exit
 fi
 
 echo "Configuring can interfaces"

@@ -1,1 +1,1 @@
-@reboot /bin/bash /home/pi/picanbus_mon/startup.sh 
+@reboot /bin/bash /home/pi/picanbus_mon/startup.sh
