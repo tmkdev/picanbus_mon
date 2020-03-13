@@ -21,8 +21,11 @@ sudo apt-get install -y git
 echo "Cloning picanbus_mon"
 git clone --recurse-submodules https://github.com/tmkdev/picanbus_mon.git
 
-echo "Install packages from picanbus_mon.doc"
 cd $HOME/picanbus_mon
+echo "Pulling latest if this script is rerun..."
+git pull origin master
+
+echo "Install packages from picanbus_mon.doc"
 sudo apt-get install -y $(cat packages.doc)
 echo "Installing cantools from pypi"
 sudo pip3 install cantools
@@ -70,7 +73,7 @@ sudo cp scripts/splashscreen.service /etc/systemd/system/
 sudo systemctl enable splashscreen
 
 echo "Setting root cron"
-sudo crontab script/root_boot_crontab
+sudo crontab scripts/root_boot_crontab
 
 echo "Setting RUNFLAG /home/pi/RUNDISP. If this file exists the pi boots into the display automatically. Delete if that's not what you want."
 touch /home/pi/RUNDISP
