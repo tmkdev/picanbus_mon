@@ -40,6 +40,7 @@ sudo cp scripts/can0 /etc/network/interfaces.d/
 sudo cp scripts/vcan0 /etc/network/interfaces.d/
 
 echo "Configuring cadillac boot screen"
+cp cardisp/images/cadillac-logo.jpg /opt/splash.jpg
 
 echo "Swapping boot/config.txt"
 if [ ! -f "/boot/config.txt.orig" ]; then
