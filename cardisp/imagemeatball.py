@@ -55,13 +55,16 @@ class ImageMeatball(object):
         draw.line((balldim/2, 0, balldim/2, balldim), fill=self.style.gridcolor)
         draw.line((0, balldim/2, balldim, balldim/2), fill=self.style.gridcolor)
 
-        revhistory = list(history)[::-1]
+        hist = list(history)
 
-        for i, point in enumerate(revhistory):
+        for i, point in enumerate(hist):
             dotx, doty = self.dotcoord(point[0], point[1])
-            dotscale = 15/len(revhistory)
+            dotscale = 15/len(history)
             thisdot = int(i * dotscale)
-            draw.ellipse((dotx-thisdot, doty-thisdot, dotx+thisdot, doty+thisdot), (200, 200, 0))
+            colscale = 200/len(history)
+            thiscol = int(i * colscale)
+
+            draw.ellipse((dotx-thisdot, doty-thisdot, dotx+thisdot, doty+thisdot), (thiscol, thiscol, 0))
 
         dotx, doty = self.dotcoord(ax, ay)
         draw.ellipse((dotx-15, doty-15, dotx+15, doty+15),

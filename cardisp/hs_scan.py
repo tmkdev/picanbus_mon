@@ -59,9 +59,9 @@ class HS_Scan(object):
         if not found:
             raise Exception('No suitable video driver found!')
 
-        size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
-        logging.warning("Framebuffer size: %d x %d" % (size[0], size[1]))
-        self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+        self.size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+        logging.warning("Framebuffer size: %d x %d" % (self.size[0], self.size[1]))
+        self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
         pygame.mouse.set_visible(False)
         pygame.font.init()
         self.font1 = pygame.font.Font(gcfg.g_font, 40)
@@ -169,8 +169,8 @@ class HS_Scan(object):
     def meatball(self):
         self.screen.fill(gcfg.g_black)
 
-        pilimage = gcfg.meatballgauge.drawmeatball(canreader.acceltracer.lat, 
-                                                   canreader.acceltracer.accel, 
+        pilimage = gcfg.meatballgauge.drawmeatball(canreader.acceltracer.lat,
+                                                   canreader.acceltracer.accel,
                                                    canreader.acceltracer.history)
 
         raw_str = pilimage.tobytes("raw", 'RGB')
@@ -203,10 +203,10 @@ class HS_Scan(object):
         self.screen.blit(textImage, (0, 0))
 
         textImage = self.font3.render(cputempstring, True, gcfg.g_white)
-        self.screen.blit(textImage, (500, 0))
+        self.screen.blit(textImage, ((self.size[0] // 2) - (textImage.get_rect()[2] // 2), 0))
 
         textImage = self.font3.render(loadavgstring, True, gcfg.g_white)
-        self.screen.blit(textImage, (1125, 0))
+        self.screen.blit(textImage, (self.size[0] - textImage.get_rect()[2], 0))
 
         pygame.display.update()
 
@@ -295,7 +295,7 @@ if __name__ == '__main__':
                     if event.code == gcfg.g_screenshot:
                         scanner.screenshot()
 
-            time.sleep(0.1)
+            time.sleep(0.05)
             if mode == 0:
                 scanner.updateKPIs(gaugescreen)
             elif mode == 1:
