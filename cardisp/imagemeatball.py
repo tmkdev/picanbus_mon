@@ -17,7 +17,7 @@ class ImageMeatball(object):
         self.fontsmall = ImageFont.truetype(self.style.font, size=32)
         self.fonttext = ImageFont.truetype(self.style.font, size=24)
 
-    def drawmeatball(self, ax, ay):
+    def drawmeatball(self, ax, ay, history):
         balldim = min(self.style.width, self.style.height)
 
         g_scaler = int((balldim / 2) / 1.25)
@@ -55,10 +55,14 @@ class ImageMeatball(object):
         draw.line((balldim/2, 0, balldim/2, balldim), fill=self.style.gridcolor)
         draw.line((0, balldim/2, balldim, balldim/2), fill=self.style.gridcolor)
 
-        scalex = int((ax / ImageMeatball.g_force) * g_scaler)
-        scaley = int((ay / ImageMeatball.g_force) * g_scaler)
-        dotx = balldim/2 + scalex
-        doty = balldim/2 + scaley
+        revhistory = list(history)[::-1]
+
+        for i, point in enumerate(revhistory):
+            dotx, doty = self.dotcoord(point[0], point{1})
+            draw.ellipse((dotx-8, doty-8, dotx+8, doty+8), (i,i,0))
+
+
+        dotx, doty = self.dotcoord(ax, ay)
         draw.ellipse((dotx-15, doty-15, dotx+15, doty+15),
                      self.style.bgcolor,
                      self.style.textcolor,
@@ -70,6 +74,18 @@ class ImageMeatball(object):
         del draw
 
         return im
+
+    def dotcoord(ax, ay):
+        balldim = min(self.style.width, self.style.height)
+        g_scaler = int((balldim / 2) / 1.25)
+
+
+        scalex = int((ax / ImageMeatball.g_force) * g_scaler)
+        scaley = int((ay / ImageMeatball.g_force) * g_scaler)
+        dotx = balldim/2 + scalex
+        doty = balldim/2 + scaley
+
+        return dotx, doty
 
     def drawvals(self, draw, ax, ay):
         gx = ax / ImageMeatball.g_force
