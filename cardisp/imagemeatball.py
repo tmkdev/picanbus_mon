@@ -58,9 +58,10 @@ class ImageMeatball(object):
         revhistory = list(history)[::-1]
 
         for i, point in enumerate(revhistory):
-            dotx, doty = self.dotcoord(point[0], point{1})
-            draw.ellipse((dotx-8, doty-8, dotx+8, doty+8), (i,i,0))
-
+            dotx, doty = self.dotcoord(point[0], point[1])
+            dotscale = 15/len(revhistory)
+            thisdot = int(i * dotscale)
+            draw.ellipse((dotx-thisdot, doty-thisdot, dotx+thisdot, doty+thisdot), (200, 200, 0))
 
         dotx, doty = self.dotcoord(ax, ay)
         draw.ellipse((dotx-15, doty-15, dotx+15, doty+15),
@@ -75,10 +76,9 @@ class ImageMeatball(object):
 
         return im
 
-    def dotcoord(ax, ay):
+    def dotcoord(self, ax, ay):
         balldim = min(self.style.width, self.style.height)
         g_scaler = int((balldim / 2) / 1.25)
-
 
         scalex = int((ax / ImageMeatball.g_force) * g_scaler)
         scaley = int((ay / ImageMeatball.g_force) * g_scaler)
@@ -110,7 +110,7 @@ class ImageMeatball(object):
         return draw
 
     def drawminmax(self, draw, minmaxx, minmany):
-        raise NotImplementedError  
+        raise NotImplementedError
 
     def scalequads(self, ax, ay):
         minscale = 0.3

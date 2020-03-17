@@ -169,7 +169,9 @@ class HS_Scan(object):
     def meatball(self):
         self.screen.fill(gcfg.g_black)
 
-        pilimage = gcfg.meatballgauge.drawmeatball(canreader.acceltracer.lat, canreader.acceltracer.accel, canreader.acceltracker.history)
+        pilimage = gcfg.meatballgauge.drawmeatball(canreader.acceltracer.lat, 
+                                                   canreader.acceltracer.accel, 
+                                                   canreader.acceltracer.history)
 
         raw_str = pilimage.tobytes("raw", 'RGB')
         surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')

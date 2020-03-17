@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Miniconda3\\envs\\cantools\\python.exe",
+    "python.pythonPath": "/usr/bin/python3",
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": true
 }

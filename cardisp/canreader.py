@@ -99,7 +99,7 @@ class AccelTracker(object):
         self.accelminmax = [0, 0]
         self.lat = 0
         self.latminmax = [0, 0]
-        self.history = deque(maxlen=30)
+        self.history = deque(maxlen=60)
 
     def updateaccel(self, speeddata):
         try:
@@ -108,7 +108,7 @@ class AccelTracker(object):
             self.accel = (curspeed[1] - lastspeed[1]) * 0.277778 / (curspeed[0] - lastspeed[0]).total_seconds()
             self.setminmax()
 
-            self.history.append((self.accel, self.lat))
+            self.history.append((self.lat, self.accel))
 
         except IndexError:
             pass
@@ -119,7 +119,7 @@ class AccelTracker(object):
         try:
             self.lat = lateraldata[-1][1]
             self.setminmax()
-            self.history.append((self.accel, self.lat))
+            self.history.append((self.lat, self.accel))
 
         except IndexError:
             pass
