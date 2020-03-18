@@ -116,7 +116,7 @@ class ImageMeatball(object):
         raise NotImplementedError
 
     def scalequads(self, ax, ay):
-        minscale = 0.3
+        minscale = 0.4
         #            ax+   ay+ ax-  ay-
         scalequad = [minscale, minscale, minscale, minscale]
 
