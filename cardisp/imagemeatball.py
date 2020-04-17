@@ -116,17 +116,21 @@ class ImageMeatball(object):
         raise NotImplementedError
 
     def scalequads(self, ax, ay):
+        # Min scale factor for color. IE: color * minscale is the darkest
         minscale = 0.4
+        # Min G before scaling - 0 was annoying while driving. Make the coloring matter.. 
+        min_g = 0.15
+        
         #            ax+   ay+ ax-  ay-
         scalequad = [minscale, minscale, minscale, minscale]
 
-        if ax > 0:
+        if ax > min_g:
             scalequad[0] = max(min(minscale, abs(ax / ImageMeatball.g_force)), 1)
-        if ax < 0:
+        if ax < -min_g:
             scalequad[2] = max(min(minscale, abs(ax / ImageMeatball.g_force)), 1)
-        if ay > 0:
+        if ay > min_g:
             scalequad[1] = max(min(minscale, abs(ay / ImageMeatball.g_force)), 1)
-        if ay < 0:
+        if ay < -min_g:
             scalequad[3] = max(min(minscale, abs(ay / ImageMeatball.g_force)), 1)
 
         return scalequad
