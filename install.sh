@@ -55,10 +55,10 @@ fi
 
 echo "Configuring config.txt"
 sudo sed -i -r 's/^#?disable_overscan.*$/disable_overscan=0/' /boot/config.txt
-sudo sed -i -r 's/^#?overscan_left.*$/overscan_left=0/' /boot/config.txt
-sudo sed -i -r 's/^#?overscan_right.*$/overscan_right=0/' /boot/config.txt
-sudo sed -i -r 's/^#?overscan_top.*$/overscan_top=0/' /boot/config.txt
-sudo sed -i -r 's/^#?overscan_bottom.*$/overscan_bottom=0/' /boot/config.txt
+sudo sed -i -r 's/^#?overscan_left.*$/#overscan_left=0/' /boot/config.txt
+sudo sed -i -r 's/^#?overscan_right.*$/#overscan_right=0/' /boot/config.txt
+sudo sed -i -r 's/^#?overscan_top.*$/#overscan_top=0/' /boot/config.txt
+sudo sed -i -r 's/^#?overscan_bottom.*$/#overscan_bottom=0/' /boot/config.txt
 sudo sed -i -r 's/^#?framebuffer_width.*$/framebuffer_width=1280/' /boot/config.txt
 sudo sed -i -r 's/^#?framebuffer_height.*$/framebuffer_height=720/' /boot/config.txt
 sudo sed -i -r 's/^#?dtparam=i2c_arm.*$/dtparam=i2c_arm=on/' /boot/config.txt
