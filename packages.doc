@@ -7,5 +7,6 @@ python3-pygame
 python3-can
 python3-pip
 python3-evdev
+can-utils
 fbi
 git

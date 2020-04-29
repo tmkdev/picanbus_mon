@@ -17,7 +17,7 @@ class ImageMeatball(object):
         self.fontsmall = ImageFont.truetype(self.style.font, size=32)
         self.fonttext = ImageFont.truetype(self.style.font, size=24)
 
-    def drawmeatball(self, ax, ay):
+    def drawmeatball(self, ax, ay, history):
         balldim = min(self.style.width, self.style.height)
 
         g_scaler = int((balldim / 2) / 1.25)
@@ -55,10 +55,18 @@ class ImageMeatball(object):
         draw.line((balldim/2, 0, balldim/2, balldim), fill=self.style.gridcolor)
         draw.line((0, balldim/2, balldim, balldim/2), fill=self.style.gridcolor)
 
-        scalex = int((ax / ImageMeatball.g_force) * g_scaler)
-        scaley = int((ay / ImageMeatball.g_force) * g_scaler)
-        dotx = balldim/2 + scalex
-        doty = balldim/2 + scaley
+        hist = list(history)
+
+        for i, point in enumerate(hist):
+            dotx, doty = self.dotcoord(point[0], point[1])
+            dotscale = 15/len(history)
+            thisdot = int(i * dotscale)
+            colscale = 200/len(history)
+            thiscol = int(i * colscale)
+
+            draw.ellipse((dotx-thisdot, doty-thisdot, dotx+thisdot, doty+thisdot), (thiscol, thiscol, 0))
+
+        dotx, doty = self.dotcoord(ax, ay)
         draw.ellipse((dotx-15, doty-15, dotx+15, doty+15),
                      self.style.bgcolor,
                      self.style.textcolor,
@@ -70,6 +78,17 @@ class ImageMeatball(object):
         del draw
 
         return im
+
+    def dotcoord(self, ax, ay):
+        balldim = min(self.style.width, self.style.height)
+        g_scaler = int((balldim / 2) / 1.25)
+
+        scalex = int((ax / ImageMeatball.g_force) * g_scaler)
+        scaley = int((ay / ImageMeatball.g_force) * g_scaler)
+        dotx = balldim/2 + scalex
+        doty = balldim/2 + scaley
+
+        return dotx, doty
 
     def drawvals(self, draw, ax, ay):
         gx = ax / ImageMeatball.g_force
@@ -94,20 +113,24 @@ class ImageMeatball(object):
         return draw
 
     def drawminmax(self, draw, minmaxx, minmany):
-        raise NotImplementedError  
+        raise NotImplementedError
 
     def scalequads(self, ax, ay):
-        minscale = 0.3
+        # Min scale factor for color. IE: color * minscale is the darkest
+        minscale = 0.4
+        # Min G before scaling - 0 was annoying while driving. Make the coloring matter.. 
+        min_g = 0.15
+        
         #            ax+   ay+ ax-  ay-
         scalequad = [minscale, minscale, minscale, minscale]
 
-        if ax > 0:
+        if ax > min_g:
             scalequad[0] = max(min(minscale, abs(ax / ImageMeatball.g_force)), 1)
-        if ax < 0:
+        if ax < -min_g:
             scalequad[2] = max(min(minscale, abs(ax / ImageMeatball.g_force)), 1)
-        if ay > 0:
+        if ay > min_g:
             scalequad[1] = max(min(minscale, abs(ay / ImageMeatball.g_force)), 1)
-        if ay < 0:
+        if ay < -min_g:
             scalequad[3] = max(min(minscale, abs(ay / ImageMeatball.g_force)), 1)
 
         return scalequad

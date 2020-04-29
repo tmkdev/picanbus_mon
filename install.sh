@@ -1,11 +1,10 @@
 #!/bin/bash
-
-cd $HOME
-
 if [ "$USER" != "pi" ]; then
     echo "This script is intended to install to user pi. $USER is not supported."
     exit 2
 fi
+
+cd $HOME
 
 echo "This script will attempt to install picanbus_mon on your pi. It might actually work."
 echo "It does envoke sudo - so I'll wait for 10 secs to make sure your OK with that..."
@@ -53,7 +52,18 @@ if [ ! -f "/boot/config.txt.orig" ]; then
     echo "Backing up config.txt.. "
     sudo cp /boot/config.txt /boot/config.txt.orig
 fi 
-sudo cp scripts/config.txt /boot/config.txt
+
+echo "Configuring config.txt"
+sudo sed -i -r 's/^#?disable_overscan.*$/disable_overscan=0/' /boot/config.txt
+sudo sed -i -r 's/^#?overscan_left.*$/#overscan_left=0/' /boot/config.txt
+sudo sed -i -r 's/^#?overscan_right.*$/#overscan_right=0/' /boot/config.txt
+sudo sed -i -r 's/^#?overscan_top.*$/#overscan_top=0/' /boot/config.txt
+sudo sed -i -r 's/^#?overscan_bottom.*$/#overscan_bottom=0/' /boot/config.txt
+sudo sed -i -r 's/^#?framebuffer_width.*$/framebuffer_width=1280/' /boot/config.txt
+sudo sed -i -r 's/^#?framebuffer_height.*$/framebuffer_height=720/' /boot/config.txt
+sudo sed -i -r 's/^#?dtparam=i2c_arm.*$/dtparam=i2c_arm=on/' /boot/config.txt
+grep -Fxq "sdtv_aspect=3" /boot/config.txt || sudo bash -c "echo 'sdtv_aspect=3' >> /boot/config.txt"
+grep -Fxq "dtoverlay=i2c-rtc" /boot/config.txt ||  sudo bash -c "echo 'dtoverlay=i2c-rtc,ds3231' >> /boot/config.txt"
 
 if [ ! -f "/boot/cmdline.txt.orig" ]; then
     echo "Backing up cmdline.txt.. "
@@ -83,9 +93,12 @@ touch /home/pi/RUNDISP
 
 echo "Getting opensource font sekawk for segoeui"
 mkdir fonts
-wget https://github.com/winjs/winstrap/blob/5a3c1341190e7585fd550e01cfded50ae4e8a4c7/src/fonts/selawk.ttf?raw=true -O fonts/segoeui.ttf
+wget https://github.com/winjs/winstrap/blob/5a3c1341190e7585fd550e01cfded50ae4e8a4c7/src/fonts/selawk.ttf?raw=true -O fonts/selawk.ttf
+cd fonts
+ln -s selawk.ttf segoeui.ttf
+cd ..
 
 echo "Done?! Rebooting in 10 seconds"
 sleep 10
 
-sudo reboot
+sudo reboot3

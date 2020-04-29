@@ -99,6 +99,7 @@ class AccelTracker(object):
         self.accelminmax = [0, 0]
         self.lat = 0
         self.latminmax = [0, 0]
+        self.history = deque(maxlen=60)
 
     def updateaccel(self, speeddata):
         try:
@@ -106,6 +107,8 @@ class AccelTracker(object):
             curspeed = speeddata[-1]
             self.accel = (curspeed[1] - lastspeed[1]) * 0.277778 / (curspeed[0] - lastspeed[0]).total_seconds()
             self.setminmax()
+
+            self.history.append((self.lat, self.accel))
 
         except IndexError:
             pass
@@ -116,6 +119,7 @@ class AccelTracker(object):
         try:
             self.lat = lateraldata[-1][1]
             self.setminmax()
+            self.history.append((self.lat, self.accel))
 
         except IndexError:
             pass
@@ -188,11 +192,11 @@ class PerfTracker(object):
                 self.current_result['1/4 Mile MPH'] = speeddata[-1][1] * 0.621371
 
     def resetcounters(self, speeddata):
-            self.starttime = speeddata[-1][0]
-            self.distance = 0
-            self.curr_et = 0
-            self.results.append(self.current_result)
-            self.current_result = self.genPerfResult()
+        self.starttime = speeddata[-1][0]
+        self.distance = 0
+        self.curr_et = 0
+        self.results.append(self.current_result)
+        self.current_result = self.genPerfResult()
 
 
 if __name__ == '__main__':
