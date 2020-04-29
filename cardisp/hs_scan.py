@@ -169,28 +169,34 @@ class HS_Scan(object):
     def meatball(self):
         self.screen.fill(gcfg.g_black)
 
-        pilimage = gcfg.meatballgauge.drawmeatball(canreader.acceltracer.lat,
+        try:
+            pilimage = gcfg.meatballgauge.drawmeatball(canreader.acceltracer.lat,
                                                    canreader.acceltracer.accel,
                                                    canreader.acceltracer.history)
 
-        raw_str = pilimage.tobytes("raw", 'RGB')
-        surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
-        self.screen.blit(surface, (320, 0))
 
-        quads = [(0, 0), (0, 360), (960, 0), (960, 360)]
-
-        for i, gauge in enumerate(gcfg.meatballguages):
-            try:
-                val = canreader.currentdata[gauge.name][-1][1]
-            except KeyError:
-                val = None
-
-            pilimage = gauge.gaugeclass.drawval(val)
             raw_str = pilimage.tobytes("raw", 'RGB')
             surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
-            self.screen.blit(surface, quads[i])
+            self.screen.blit(surface, (320, 0))
 
-        pygame.display.update()
+            quads = [(0, 0), (0, 360), (960, 0), (960, 360)]
+
+            for i, gauge in enumerate(gcfg.meatballguages):
+                try:
+                    val = canreader.currentdata[gauge.name][-1][1]
+                except (KeyError, IndexError) as e:
+                    val = None
+
+                pilimage = gauge.gaugeclass.drawval(val)
+                raw_str = pilimage.tobytes("raw", 'RGB')
+                surface = pygame.image.fromstring(raw_str, pilimage.size, 'RGB')
+                self.screen.blit(surface, quads[i])
+
+            pygame.display.update()
+
+        except:
+            logging.exception('Meatball render fail..')
+
 
     def drawheader(self):
         cpu = gpiozero.CPUTemperature()
@@ -234,7 +240,7 @@ if __name__ == '__main__':
     scanner = HS_Scan()
     canreader.start()
 
-    perfscreens = deque([scanner.perfscreen, scanner.meatball])
+    perfscreens = deque([scanner.meatball, scanner.perfscreen])
     perfscreen = perfscreens[0]
 
     gaugescreens = deque(gcfg.screens)

@@ -151,8 +151,10 @@ if __name__ == '__main__':
                                gridcolor=(128, 128, 128),
                                font='fonts/segoeui.ttf')
 
+    history = [(0,0)] * 60
+
     mb = ImageMeatball(style)
 
-    mbi = mb.drawmeatball(6, 6)
+    mbi = mb.drawmeatball(6, 6, history)
 
     mbi.save('meatball.png')
