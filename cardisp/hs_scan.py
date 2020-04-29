@@ -220,11 +220,10 @@ def keyboardworker():
             dev = InputDevice('/dev/input/event1')
             dev.grab()
             for event in dev.read_loop():
-                if event.type == ecodes.EV_KEY:
-                    events.put(event)
+                events.put(event)
         except Exception:
             logging.info('Waiting for input device')
-            time.sleep(1)
+            time.sleep(0.1)
     dev.ungrab()
 
 
